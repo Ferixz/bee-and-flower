@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>D3</title>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+<%= render "layouts/header"%>
+<div id='container' class="container">
+<%= yield %>
+<script>
+	var staticWordCompleter = {
+	    getCompletions: function(editor, session, pos, prefix, callback) {
+	        var wordList = [<% for c in Color.all%>'<%= c.name%>',<%end%>'goto','if', 'while', 'current', 'neighbor', 'is', 'not'];
+	        callback(null, wordList.map(function(word) {
+	            return {
+	                caption: word,
+	                value: word,
+	                meta: "static"
+	            };
+	        }));
+
+	    }
+	}
+
+
+	var colors = {<% for c in Color.all%>'<%= c.name%>':'#<%= c.hex%>',<%end%>}
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/tomorrow_night_bright");
+    editor.getSession().setMode("ace/mode/rasa");
+	editor.setOptions({
+	    enableLiveAutocompletion: true
+	});
+	editor.completers = [staticWordCompleter]
+	 editor.renderer.on('afterRender', function(e) {
+	      // $('.ace_identifier').css("background-color","lightBlue");
+		$('.ace_identifier').each(function(i, obj) {
+			var value = $(this).text()
+
+			var hex = colors[value]
+			if (typeof hex != undefined){
+			$(this).css("background-color", hex);
+		}
+		});
+	    });
+</script>
+</div>
+</body>
+</html>

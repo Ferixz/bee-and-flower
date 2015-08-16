@@ -1,0 +1,409 @@
+
+<!-- Portfolio Item Heading -->
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">زنبور عسل
+
+        </h1>
+    </div>
+</div>
+<!-- /.row -->
+
+<!-- Portfolio Item Row -->
+<div class="row">
+
+    <div id="graph" class="col-md-8">
+
+    </div>
+
+    <div class="col-md-4">
+        <h4>برنامه‌ای بنویسید که زنبور را به گل برساند</h4>
+		<br />
+
+		<pre id="editor">while current not black(
+goto purple
+)
+goto orange
+		</pre>
+
+		<div class="form-group">
+
+		<br />
+		<button type="button" id="run" class="btn btn-success pull-left">اجرا</button>
+		</div>
+
+    </div>
+
+</div>
+<p id='result' class="bg-success">...</p>
+<!-- /.row -->
+
+<!-- Related Projects Row -->
+<div class="row">
+
+    <div class="col-lg-12">
+        <h3 class="page-header">Related Projects</h3>
+    </div>
+
+    <div class="col-sm-3 col-xs-6">
+        <a href="#">
+            <img class="img-responsive portfolio-item" src="" alt="">
+        </a>
+    </div>
+
+    <div class="col-sm-3 col-xs-6">
+        <a href="#">
+            <img class="img-responsive portfolio-item" src="" alt="">
+        </a>
+    </div>
+
+    <div class="col-sm-3 col-xs-6">
+        <a href="#">
+            <img class="img-responsive portfolio-item" src="" alt="">
+        </a>
+    </div>
+
+    <div class="col-sm-3 col-xs-6">
+        <a href="#">
+            <img class="img-responsive portfolio-item" src="" alt="">
+        </a>
+    </div>
+
+</div>
+<!-- /.row -->
+
+<hr>
+
+<!-- Footer -->
+<footer>
+    <div class="row">
+        <div class="col-lg-12">
+            <p>Copyright &copy; Your Website 2014</p>
+        </div>
+    </div>
+    <!-- /.row -->
+</footer>
+
+
+<script>
+var width = 750,
+height = 400;
+
+var force = d3.layout.force()
+				.size([width, height])
+				.charge(-400)
+				.linkDistance(80)
+				.on("tick", tick)
+				.on("end", nodelist);
+
+var svg = d3.select("#graph").append("svg")
+			.attr("width", width)
+			.attr("height", height);
+
+var link = svg.selectAll(".link"),
+	node = svg.selectAll(".node");
+
+var graph = {
+	"nodes": [
+	{"label": "1", 'color': 'white', 'hex':'#ffffff'},
+	{"label": "2", 'color': 'black', 'hex':'#131313'},
+	{"label": "3", 'color': 'black', 'hex':'#131313'},
+	<% for i in 4..13 do%>
+	{"label": "<%= i%>", 'color': '<%= Color.find(i).name%>', 'hex':'#<%= Color.find(i).hex%>'},
+	<%end%>
+/*	{"label": "A", 'color':'#7B1FA2'},
+	{"label": "B", 'color':'#303F9F'},
+	{ "label": "C", 'color':'#F57c00'},
+	{ "label": "D", 'color':'#303F9F', 'temp':'#795548'},
+	{ "label": "E", 'color':'#ffeb3b'},
+	{ "label": "F", 'color':'#ff4081'},
+	{ "label": "G", 'color':'#03A9F4'},
+	{ "label": "H", 'color':'#9e9e9e'},
+	{ "label": "I", 'color':'#ffffff'},
+	{ "label": "J", 'color':'#212121'},
+	{ "label": "K", 'color':'#673AB7'},
+	{"label": "L", 'color':'#4caf50'},
+	{"label": "M", 'color':'#fff9c4'}*/
+	],
+	"links": [
+	{"source":  0, "target":  1},
+	{"source":  1, "target":  2},
+	{"source":  2, "target":  0},
+	{"source":  1, "target":  3},
+	{"source":  3, "target":  2},
+	{"source":  3, "target":  4},
+	{"source":  4, "target":  5},
+	{"source":  5, "target":  6},
+	{"source":  5, "target":  7},
+	{"source":  6, "target":  7},
+	{"source":  6, "target":  8},
+	{"source":  7, "target":  8},
+	{"source":  9, "target":  4},
+	{"source":  9, "target": 11},
+	{"source":  9, "target": 10},
+	{"source": 10, "target": 11},
+	{"source": 11, "target": 12},
+	{"source": 12, "target": 10}
+	]
+};
+	var flower_id = 8;
+	var visited = [];
+(function() {
+
+	force
+		.nodes(graph.nodes)
+		.links(graph.links)
+		.start();
+
+	link = link.data(graph.links)
+		.enter().append("line")
+		.attr("class", "link");
+
+	node = node.data(graph.nodes)
+		.enter().append("g")
+		.attr("class", "node")
+
+	node.append("circle")
+		.attr("r", 11)
+		.style("fill",function(d,i){return d.hex;});
+})();
+
+function nodelist() {
+	$('#run').click(function(){
+	var points = []
+
+
+	var output = parser.parse(editor.getSession().getValue());
+	var result = $("#result").text(jsDump.parse(output));
+	var res = jQuery.parseJSON(jsDump.parse(output));
+	//var current = node[0][0];
+	var current = link[0][0].__data__.source
+	points.push([current.x,current.y])
+	var command = []
+	var iterations = []
+	function process(key,value) {
+			//console.log(key + " : "+value);
+			switch (true) {
+				case value =='goto':
+					command.push('current=go_to(current,')
+					break;
+				case key =='color':
+					if (command[command.length - 1] == 'current=go_to(current,'){
+						command.push("'" + value +"'"+');')
+					}
+					break;
+				case value =='if':
+					command.push('if (');
+					break;
+				case value =='while':
+					var iterator = randid(2)
+					iterations.push(iterator)
+					command.push('var ' +  iterator + '=0;while (')
+					break;
+				case key == 'condition':
+					var length = graph.nodes.length + 1
+					var iterator = iterations[iterations.length -1]
+					if (command[command.length - 1] == 'if ('){
+						command.push('extract_cond(current,'+"'"+value.node+"'"+','+"'"+ value.verb+"'"+','+"'"+value.color+"'"+')){')
+					}else{
+						command.push('extract_cond(current,'+"'"+value.node+"'"+','+"'"+ value.verb+"'"+','+"'"+value.color+"'"+') && '+ iterator +'< '+ length +'){' +iterator +'++;')
+					}
+					break;
+				}
+	}
+
+	function post_process(obj){
+		if (typeof obj.tag != "undefined"){
+			switch (true) {
+			case obj.tag == 'while':
+				var length = graph.nodes.length -1;
+				var iterator = iterations[iterations.length -1]
+				command.push("if (typeof current === 'undefined' || "+ iterator +" >"+length+") {transition(points);break;}}");
+				iterations.pop();
+				break;
+
+			case obj.tag == 'if':
+				command.push("}");
+				break;
+			}
+		}
+	}
+
+	var pendingRecursive = 0;
+	function traverse(o,func) {
+	    for (var i in o) {
+	        func.apply(this,[i,o[i]]);
+	        if (o[i] !== null && typeof(o[i])=="object") {
+				pendingRecursive++;
+				//console.log(pendingRecursive);
+	            traverse(o[i],func);
+				post_process(o[i]);
+				pendingRecursive--;
+	        }
+	    }
+		if (pendingRecursive == 0){
+		  command.push('transition(points);')
+	     //console.log(command.join(" "))
+		  eval(command.join(" "))
+	    }
+	}
+
+	traverse(res,process);
+
+	function extract_cond(current, cond_node , cond_verb, cond_color) {
+
+			console.log(current.color);
+			switch (true) {
+				case cond_node == 'current':
+					if (cond_verb == 'is'){
+						if (current.color == cond_color){ return true}else{return false}
+					} else {
+						if (current.color != cond_color){ console.log(current.index +' not current '+ cond_color); return true}else{return false}
+					}
+				case cond_node == 'neighbor':
+					if ( cond_verb == 'is'){
+						if (neigbor_color(current,cond_color)){return true}else{return false}
+					} else {
+						if (!neigbor_color(current,cond_color)){
+								console.log(current.index +' neighbor is '+ cond_color);
+								return true
+						}else{
+								console.log(current.index +'s neighbor not '+ cond_color);
+								return false}
+					}
+			}
+		}
+
+		function neigbor_color(current, color){
+			//console.log(current.index, color)
+			var has = true
+			for(var i = 0; i < graph.links.length; i++) {
+			 	has = has || connected_and_color(i, current, color)[0]
+				if (i == graph.links.length -1){
+					if (has) { return has}else{return false}
+				}
+			}
+		}
+
+		function go_to(current, color) {
+			console.log(current)
+
+			for(var i = 0; i < graph.links.length; i++) {
+				if (connected_and_color(i, current, color)[0]) {
+					var target = connected_and_color(i, current, color)[1]
+					points.push([target.x,target.y])
+					console.log('going to '+ target.index );
+					visited.push(target.index);
+					console.log(visited);
+					return target
+				}
+			}
+			console.log(points);
+			transition(points);
+		}
+
+	function connected_and_color(index, current, color) {
+		//console.log(current)
+		var source = link[0][index].__data__.source
+		var target = link[0][index].__data__.target
+		//var current_index = current.__data__.index
+		var current_index = current.index
+		var valid = 0
+		if (source.index == current_index && target.color == color) {
+			next_hop = target;
+			valid = 1;
+		}
+		if (target.index == current_index  && source.color == color){
+			next_hop = source;
+			valid = 1;
+		}
+		if (valid == 1){return [true, next_hop]} else { return [false, false]}
+	}
+	});
+
+	var flower = svg.append("svg:image")
+		.attr('x',node[0][flower_id].__data__.x)
+		.attr('y',node[0][flower_id].__data__.y)
+		.attr('width', 36)
+		.attr('height', 36)
+		.attr("xlink:href","assets/Blue-Flower-icon.png")
+
+	for (i in graph.nodes){
+		var cr_y = i*25 + 10
+		var tx_y = i*25 + 15
+	 	svg.append("circle")
+			.attr("r", 9)
+			.style("fill", graph.nodes[i].hex)
+			.attr("class", "cr")
+			.attr("transform", "translate(" + 15 + "," + cr_y + ")");
+
+		svg.append("text")
+			.text(graph.nodes[i].color)
+			.attr("class", "lb")
+			.attr("transform", "translate(" + 40 + "," + tx_y + ")");
+	}
+
+
+	var bee = svg.append("svg:image")
+		.attr('x',0)
+		.attr('y',0)
+		.attr("transform", "translate(" + node[0][0].__data__.x + "," + node[0][0].__data__.y + ")")
+		.attr('width', 36)
+		.attr('height', 36)
+		.attr("xlink:href","assets/bee.png");
+
+		function fade_flower(current){
+			if (flower_id == visited[visited.length - 1]){
+				console.log('Flower Reached!');
+				flower.style("opacity", 0.5)
+			}
+		}
+
+		function transition(points) {
+
+			var path = svg.append("path")
+				.data([points])
+				.attr("d", d3.svg.line()
+				.tension(1)
+				.interpolate("monotone"));
+
+			bee.transition()
+				.duration(4000)
+				.attrTween("transform", translateAlong(path.node()))
+				.each("end",fade_flower);
+		}
+
+		function translateAlong(path) {
+		  var l = path.getTotalLength();
+		  return function(d, i, a) {
+		    return function(t) {
+		      var p = path.getPointAtLength(t * l);
+		      return "translate(" + p.x + "," + p.y + ")";
+		    };
+		  };
+		}
+
+}
+
+function tick() {
+	link.attr("x1", function(d) { return d.source.x; })
+		.attr("y1", function(d) { return d.source.y; })
+		.attr("x2", function(d) { return d.target.x; })
+		.attr("y2", function(d) { return d.target.y; });
+
+	node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+}
+
+function dblclick(d) {
+	d3.select(this).classed("fixed", d.fixed = false);
+}
+
+function dragstart(d) {
+	d3.select(this).classed("fixed", d.fixed = true);
+}
+
+
+
+	</script>
+
