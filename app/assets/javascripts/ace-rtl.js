@@ -2845,7 +2845,7 @@ var MouseEvent = exports.MouseEvent = function(domEvent, editor) {
     this.domEvent = domEvent;
     this.editor = editor;
     
-    this.x = this.clientX = domEvent.clientX;
+    this.x = this.clientX = document.documentElement.clientWidth - domEvent.clientX;
     this.y = this.clientY = domEvent.clientY;
 
     this.$pos = null;
@@ -3861,7 +3861,7 @@ var MouseHandler = function(editor) {
             if (useragent.isWebKit && !e.which && self.releaseMouse)
                 return self.releaseMouse();
 
-            self.x = e.clientX;
+            self.x = document.documentElement.clientWidth - e.clientX;
             self.y = e.clientY;
             mouseMoveHandler && mouseMoveHandler(e);
             self.mouseEvent = new MouseEvent(e, self.editor);
@@ -15469,13 +15469,13 @@ var VirtualRenderer = function(container, theme) {
             return;
         var config = this.layerConfig;
         var posTop = this.$cursorLayer.$pixelPos.top;
-        var posLeft = this.$cursorLayer.$pixelPos.left;
+        var posRight = this.$cursorLayer.$pixelPos.right;
         posTop -= config.offset;
 
         var style = this.textarea.style;
         var h = this.lineHeight;
         if (posTop < 0 || posTop > config.height - h) {
-            style.top = style.left = "0";
+            style.top = style.right = "0";
             return;
         }
 
@@ -15485,14 +15485,14 @@ var VirtualRenderer = function(container, theme) {
             w *= (this.session.$getStringScreenWidth(val)[0]+2);
             h += 2;
         }
-        posLeft -= this.scrollLeft;
-        if (posLeft > this.$size.scrollerWidth - w)
-            posLeft = this.$size.scrollerWidth - w;
+        posRight -= this.scrollLeft;
+        if (posRight > this.$size.scrollerWidth - w)
+            posRight = this.$size.scrollerWidth - w;
 
-        posLeft += this.gutterWidth;
+        posRight += this.gutterWidth;
         style.height = h + "px";
         style.width = w + "px";
-        style.left = Math.min(posLeft, this.$size.scrollerWidth - w) + "px";
+        style.right = Math.min(posRight, this.$size.scrollerWidth - w) + "px";
         style.top = Math.min(posTop, this.$size.height - h) + "px";
     };
     this.getFirstVisibleRow = function() {
@@ -16041,7 +16041,7 @@ var VirtualRenderer = function(container, theme) {
         var canvasPos = this.scroller.getBoundingClientRect();
 
         var col = Math.round(
-            (x + this.scrollLeft - canvasPos.left - this.$padding) / this.characterWidth
+            (x + this.scrollLeft - (document.documentElement.clientWidth - canvasPos.right) - this.$padding) / this.characterWidth
         );
 
         var row = (y + this.scrollTop - canvasPos.top) / this.lineHeight;
