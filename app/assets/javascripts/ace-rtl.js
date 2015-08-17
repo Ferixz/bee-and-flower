@@ -1483,7 +1483,7 @@ exports.addMouseWheelListener = function(el, callback) {
         exports.addListener(el, "mousewheel", function(e) {
             var factor = 8;
             if (e.wheelDeltaX !== undefined) {
-                e.wheelX = -e.wheelDeltaX / factor;
+                e.wheelX = e.wheelDeltaX / factor;
                 e.wheelY = -e.wheelDeltaY / factor;
             } else {
                 e.wheelX = 0;
@@ -15617,7 +15617,7 @@ var VirtualRenderer = function(container, theme) {
             this.content.style.height = config.minHeight + "px";
         }
         if (changes & this.CHANGE_H_SCROLL) {
-            this.content.style.marginRight = -this.scrollLeft + "px";
+            this.content.style.right = -this.scrollLeft + "px";
             this.scroller.className = this.scrollLeft <= 0 ? "ace_scroller" : "ace_scroller ace_scroll-left";
         }
         if (changes & this.CHANGE_FULL) {
