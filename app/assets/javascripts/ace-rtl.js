@@ -4638,7 +4638,7 @@ var Selection = function(session) {
     this.moveCursorFileStart = function() {
         this.moveCursorTo(0, 0);
     };
-    this.moveCursorLongWordRight = function() {
+    this.moveCursorLongWordLeft = function() {
         var row = this.lead.row;
         var column = this.lead.column;
         var line = this.doc.getLine(row);
@@ -4671,7 +4671,7 @@ var Selection = function(session) {
 
         this.moveCursorTo(row, column);
     };
-    this.moveCursorLongWordLeft = function() {
+    this.moveCursorLongWordRight = function() {
         var row = this.lead.row;
         var column = this.lead.column;
         var fold;
@@ -4745,7 +4745,7 @@ var Selection = function(session) {
         return index;
     };
 
-    this.moveCursorShortWordRight = function() {
+    this.moveCursorShortWordLeft = function() {
         var row = this.lead.row;
         var column = this.lead.column;
         var line = this.doc.getLine(row);
@@ -4772,7 +4772,7 @@ var Selection = function(session) {
         this.moveCursorTo(row, column + index);
     };
 
-    this.moveCursorShortWordLeft = function() {
+    this.moveCursorShortWordRight = function() {
         var row = this.lead.row;
         var column = this.lead.column;
 
