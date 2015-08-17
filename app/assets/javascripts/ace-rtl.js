@@ -10765,14 +10765,14 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "selecttolinestart",
-    bindKey: bindKey("Alt-Shift-Left", "Command-Shift-Left"),
+    bindKey: bindKey("Alt-Shift-Right", "Command-Shift-Right"),
     exec: function(editor) { editor.getSelection().selectLineStart(); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor",
     readOnly: true
 }, {
     name: "gotolinestart",
-    bindKey: bindKey("Alt-Left|Home", "Command-Left|Home|Ctrl-A"),
+    bindKey: bindKey("Alt-Right|Home", "Command-Right|Home|Ctrl-A"),
     exec: function(editor) { editor.navigateLineStart(); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor",
@@ -10807,14 +10807,14 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "selecttolineend",
-    bindKey: bindKey("Alt-Shift-Right", "Command-Shift-Right"),
+    bindKey: bindKey("Alt-Shift-Left", "Command-Shift-Left"),
     exec: function(editor) { editor.getSelection().selectLineEnd(); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor",
     readOnly: true
 }, {
     name: "gotolineend",
-    bindKey: bindKey("Alt-Right|End", "Command-Right|End|Ctrl-E"),
+    bindKey: bindKey("Alt-Left|End", "Command-Left|End|Ctrl-E"),
     exec: function(editor) { editor.navigateLineEnd(); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor",
@@ -11028,7 +11028,7 @@ exports.commands = [{
 }, {
     name: "del",
     bindKey: bindKey("Delete", "Delete|Ctrl-D|Shift-Delete"),
-    exec: function(editor) { editor.remove("right"); },
+    exec: function(editor) { editor.remove("left"); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor"
 }, {
@@ -11037,7 +11037,7 @@ exports.commands = [{
         "Shift-Backspace|Backspace",
         "Ctrl-Backspace|Shift-Backspace|Backspace|Ctrl-H"
     ),
-    exec: function(editor) { editor.remove("left"); },
+    exec: function(editor) { editor.remove("right"); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor"
 }, {
@@ -11045,7 +11045,7 @@ exports.commands = [{
     bindKey: bindKey("Shift-Delete", null),
     exec: function(editor) { 
         if (editor.selection.isEmpty()) {
-            editor.remove("left");
+            editor.remove("right");
         } else {
             return false;
         }
@@ -11067,13 +11067,13 @@ exports.commands = [{
 }, {
     name: "removewordleft",
     bindKey: bindKey("Ctrl-Backspace", "Alt-Backspace|Ctrl-Alt-Backspace"),
-    exec: function(editor) { editor.removeWordLeft(); },
+    exec: function(editor) { editor.removeWordRight(); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor"
 }, {
     name: "removewordright",
     bindKey: bindKey("Ctrl-Delete", "Alt-Delete"),
-    exec: function(editor) { editor.removeWordRight(); },
+    exec: function(editor) { editor.removeWordLeft(); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor"
 }, {
@@ -13992,7 +13992,7 @@ var Text = function(parentEl) {
 
                     if (!onlyContents) {
                         stringBuilder.push("</div>",
-                            "<div class='ace_line' style='direction: rtl; height:",
+                            "<div class='ace_line' style='direction: rtl; unicode-bidi: bidi-override; height: ",
                             this.config.lineHeight, "px'>"
                         );
                     }
@@ -14039,7 +14039,7 @@ var Text = function(parentEl) {
 
         if (!onlyContents) {
             stringBuilder.push(
-                "<div class='ace_line' style='direction: rtl; height:", 
+                "<div class='ace_line' style='direction: rtl; unicode-bidi: bidi-override; height:", 
                     this.config.lineHeight * (
                         this.$useLineGroups() ? 1 :this.session.getRowLength(row)
                     ), "px'>"
