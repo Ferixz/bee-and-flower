@@ -15617,7 +15617,7 @@ var VirtualRenderer = function(container, theme) {
             this.content.style.height = config.minHeight + "px";
         }
         if (changes & this.CHANGE_H_SCROLL) {
-            this.content.style.marginLeft = -this.scrollLeft + "px";
+            this.content.style.marginRight = -this.scrollLeft + "px";
             this.scroller.className = this.scrollLeft <= 0 ? "ace_scroller" : "ace_scroller ace_scroll-left";
         }
         if (changes & this.CHANGE_FULL) {
@@ -15868,7 +15868,7 @@ var VirtualRenderer = function(container, theme) {
 
         var pos = this.$cursorLayer.getPixelPosition(cursor);
 
-        var left = pos.left;
+        var right = pos.right;
         var top = pos.top;
         
         var topMargin = $viewMargin && $viewMargin.top || 0;
@@ -15890,13 +15890,13 @@ var VirtualRenderer = function(container, theme) {
 
         var scrollLeft = this.scrollLeft;
 
-        if (scrollLeft > left) {
-            if (left < this.$padding + 2 * this.layerConfig.characterWidth)
-                left = -this.scrollMargin.left;
-            this.session.setScrollLeft(left);
-        } else if (scrollLeft + this.$size.scrollerWidth < left + this.characterWidth) {
-            this.session.setScrollLeft(Math.round(left + this.characterWidth - this.$size.scrollerWidth));
-        } else if (scrollLeft <= this.$padding && left - scrollLeft < this.characterWidth) {
+        if (scrollLeft > right) {
+            if (right < this.$padding + 2 * this.layerConfig.characterWidth)
+                right = -this.scrollMargin.left;
+            this.session.setScrollLeft(right);
+        } else if (scrollLeft + this.$size.scrollerWidth < right + this.characterWidth) {
+            this.session.setScrollLeft(Math.round(right + this.characterWidth - this.$size.scrollerWidth));
+        } else if (scrollLeft <= this.$padding && right - scrollLeft < this.characterWidth) {
             this.session.setScrollLeft(0);
         }
     };
