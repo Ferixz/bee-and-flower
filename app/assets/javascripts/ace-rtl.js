@@ -4562,7 +4562,7 @@ var Selection = function(session) {
     this.moveCursorDown = function() {
         this.moveCursorBy(1, 0);
     };
-    this.moveCursorLeft = function() {
+    this.moveCursorRight = function() {
         var cursor = this.lead.getPosition(),
             fold;
 
@@ -4581,7 +4581,7 @@ var Selection = function(session) {
                 this.moveCursorBy(0, -1);
         }
     };
-    this.moveCursorRight = function() {
+    this.moveCursorLeft = function() {
         var cursor = this.lead.getPosition(),
             fold;
         if (fold = this.session.getFoldAt(cursor.row, cursor.column, 1)) {
