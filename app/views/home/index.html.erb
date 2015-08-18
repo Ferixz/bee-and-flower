@@ -180,7 +180,7 @@ function nodelist() {
 	var command = []
 	var iterations = []
 	var condition_command = []
-
+	var dfs_track = false
 
 	function process(key,value) {
 			//console.log(key + " : "+value);
@@ -289,12 +289,12 @@ function nodelist() {
 			//console.log(parseInt(cond_node), typeof parseInt(cond_node));
 			console.log(current, cond_node , cond_verb, cond_color);
 			switch (true) {
-				case parseInt(cond_node) != NaN:
+				case !isNaN(parseInt(cond_node)):
 					if (cond_verb == 'is'){
-						console.log(parseInt(cond_node));
-						if (dfs(current,0, parseInt(cond_node), [])){ return true}else{return false}
+						//console.log(parseInt(cond_node));
+						if (dfs(current,0, parseInt(cond_node), [], cond_color)){ return true}else{return false}
 					} else {
-						if (!dfs(current,0, parseInt(cond_node), [])){return true}else{return false}
+						if (!dfs(current,0, parseInt(cond_node), [], cond_color)){return true}else{return false}
 					}
 					break;
 				case cond_node == 'current':
@@ -328,9 +328,11 @@ function nodelist() {
 
 
 
-		function dfs(current_node,current_depth, desired_depth, visited_dfs){
+		function dfs(current_node,current_depth, desired_depth, visited_dfs, color){
 			console.log(current_node,current_depth, desired_depth)
 			if(current_depth == desired_depth) {
+				if (current_node.color == color){
+				}
 		    	return;
 		  	}
 			var n = neighbors(current_node)
@@ -340,7 +342,7 @@ function nodelist() {
 				if (indexOf.call(visited_dfs, n[i].index) == -1){
 				//	console.log(n[i].index+ ' vs ', visited_dfs,'result: ' + indexOf.call(visited_dfs, n[i].index))
 					visited_dfs.push(n[i].index);
-					dfs(n[i], current_depth + 1, desired_depth, visited_dfs);
+					dfs(n[i], current_depth + 1, desired_depth, visited_dfs, color);
 				}
 			}
 		}
