@@ -20,11 +20,9 @@
         <h4>برنامه‌ای بنویسید که زنبور را به گل برساند</h4>
 		<br />
 
-		<pre id="editor">while current not black(
-goto purple
-)
-goto orange
-		</pre>
+		<pre id="editor">while neighbor is purple and current not green {
+}
+				</pre>
 
 		<div class="form-group">
 
@@ -181,16 +179,23 @@ function nodelist() {
 	points.push([current.x,current.y])
 	var command = []
 	var iterations = []
+	var condition_command = []
+
+
 	function process(key,value) {
 			//console.log(key + " : "+value);
 			switch (true) {
 				case value =='goto':
 					command.push('current=go_to(current,')
 					break;
-				case key =='color':
-					if (command[command.length - 1] == 'current=go_to(current,'){
-						command.push("'" + value +"'"+');')
+				case key =='color' && command[command.length - 1] == 'current=go_to(current,':
+						command.push("['" + value +"'")
+					break;
+				case key =='other':
+					for(var i = 0; i < value.length; i++) {
+						command.push(",'" + value[i].color +"'")
 					}
+					command.push(']);')
 					break;
 				case value =='if':
 					command.push('if (');
@@ -198,21 +203,48 @@ function nodelist() {
 				case value =='while':
 					var iterator = randid(2)
 					iterations.push(iterator)
-					command.push('var ' +  iterator + '=0;while (')
+					command.push('var ' +  iterator+ '=0;')
+					command.push('while (')
 					break;
-				case key == 'condition':
+				case key == 'node':
+					condition_command.push(value)
+					break;
+				case key == 'statement':
+					condition_command.push('(')
+					break;
+				case key == 'verb':
+					condition_command.push(value)
+					break;
+				case key == 'color':
+						condition_command.push(value)
+						var logic = 'extract_cond(current,'+"'"+condition_command[condition_command.length - 3]+"'"+','+"'"+ condition_command[condition_command.length - 2]+"'"+','+"'"+condition_command[condition_command.length - 1]+"'"+')'
+		  			condition_command.pop();condition_command.pop();condition_command.pop();
+						condition_command.push(logic)
+						break;
+				case key == 'op':
+					switch (true) {
+						case value == 'or':
+							condition_command.push('||')
+							break;
+						case value == 'and':
+							condition_command.push('&&')
+							break;
+						}
+					break;
+				case key == 'body':
 					var length = graph.nodes.length + 1
 					var iterator = iterations[iterations.length -1]
-					if (command[command.length - 1] == 'if ('){
-						command.push('extract_cond(current,'+"'"+value.node+"'"+','+"'"+ value.verb+"'"+','+"'"+value.color+"'"+')){')
-					}else{
-						command.push('extract_cond(current,'+"'"+value.node+"'"+','+"'"+ value.verb+"'"+','+"'"+value.color+"'"+') && '+ iterator +'< '+ length +'){' +iterator +'++;')
-					}
-					break;
+					if (command[command.length - 1] == 'while ('){
+						command.push('(' + condition_command.join(" ") +') && '+ iterator +'< '+ length +'){' +iterator +'++;')
+						}
+						break;
 				}
 	}
 
 	function post_process(obj){
+		if (typeof obj.statement != 'undefined'){
+			condition_command.push(')')
+		}
 		if (typeof obj.tag != "undefined"){
 			switch (true) {
 			case obj.tag == 'while':
@@ -221,7 +253,6 @@ function nodelist() {
 				command.push("if (typeof current === 'undefined' || "+ iterator +" >"+length+") {transition(points);break;}}");
 				iterations.pop();
 				break;
-
 			case obj.tag == 'if':
 				command.push("}");
 				break;
@@ -237,13 +268,17 @@ function nodelist() {
 				pendingRecursive++;
 				//console.log(pendingRecursive);
 	            traverse(o[i],func);
+				//console.log(o[i])
 				post_process(o[i]);
 				pendingRecursive--;
 	        }
 	    }
 		if (pendingRecursive == 0){
 		  command.push('transition(points);')
-	     //console.log(command.join(" "))
+		//console.log(condition_command.join(" "))
+		//console.log(eval(condition_command.join(" ")))
+
+	     console.log(command.join(" "))
 		  eval(command.join(" "))
 	    }
 	}
@@ -251,18 +286,33 @@ function nodelist() {
 	traverse(res,process);
 
 	function extract_cond(current, cond_node , cond_verb, cond_color) {
-
-			console.log(current.color);
+			//console.log(parseInt(cond_node), typeof parseInt(cond_node));
+			console.log(current, cond_node , cond_verb, cond_color);
 			switch (true) {
+				case parseInt(cond_node) != NaN:
+					if (cond_verb == 'is'){
+						console.log(parseInt(cond_node));
+						if (dfs(current,0, parseInt(cond_node), [])){ return true}else{return false}
+					} else {
+						if (!dfs(current,0, parseInt(cond_node), [])){return true}else{return false}
+					}
+					break;
 				case cond_node == 'current':
 					if (cond_verb == 'is'){
 						if (current.color == cond_color){ return true}else{return false}
 					} else {
 						if (current.color != cond_color){ console.log(current.index +' not current '+ cond_color); return true}else{return false}
 					}
+					break;
 				case cond_node == 'neighbor':
 					if ( cond_verb == 'is'){
-						if (neigbor_color(current,cond_color)){return true}else{return false}
+						if (neigbor_color(current,cond_color)){
+							console.log(current.index +' neighbor is '+ cond_color);
+							return true
+						}else{
+							console.log(current.index +'s neighbor not '+ cond_color);
+							return false
+						}
 					} else {
 						if (!neigbor_color(current,cond_color)){
 								console.log(current.index +' neighbor is '+ cond_color);
@@ -271,12 +321,49 @@ function nodelist() {
 								console.log(current.index +'s neighbor not '+ cond_color);
 								return false}
 					}
+					break;
+			}
+		}
+
+
+
+
+		function dfs(current_node,current_depth, desired_depth, visited_dfs){
+			console.log(current_node,current_depth, desired_depth)
+			if(current_depth == desired_depth) {
+		    	return;
+		  	}
+			var n = neighbors(current_node)
+
+			for(var i = 0; i < n.length; i++) {
+			//	console.log()
+				if (indexOf.call(visited_dfs, n[i].index) == -1){
+				//	console.log(n[i].index+ ' vs ', visited_dfs,'result: ' + indexOf.call(visited_dfs, n[i].index))
+					visited_dfs.push(n[i].index);
+					dfs(n[i], current_depth + 1, desired_depth, visited_dfs);
+				}
+			}
+		}
+
+		function neighbors(current){
+			var neighbors = []
+			for(var i = 0; i < graph.links.length; i++) {
+				var source = link[0][i].__data__.source
+				var target = link[0][i].__data__.target
+				var current_index = current.index
+				if (source.index == current_index) {
+					neighbors.push(target);
+				}
+				if (target.index == current_index){
+					neighbors.push(source);
+				}
+				if (i == graph.links.length -1){return neighbors}
 			}
 		}
 
 		function neigbor_color(current, color){
 			//console.log(current.index, color)
-			var has = true
+			var has = false
 			for(var i = 0; i < graph.links.length; i++) {
 			 	has = has || connected_and_color(i, current, color)[0]
 				if (i == graph.links.length -1){
@@ -285,17 +372,19 @@ function nodelist() {
 			}
 		}
 
-		function go_to(current, color) {
+		function go_to(current, colors) {
 			console.log(current)
 
-			for(var i = 0; i < graph.links.length; i++) {
-				if (connected_and_color(i, current, color)[0]) {
-					var target = connected_and_color(i, current, color)[1]
-					points.push([target.x,target.y])
-					console.log('going to '+ target.index );
-					visited.push(target.index);
-					console.log(visited);
-					return target
+			for(var j = 0; j < colors.length; j++) {
+				for(var i = 0; i < graph.links.length; i++) {
+					if (connected_and_color(i, current, colors[j])[0]) {
+						var target = connected_and_color(i, current, colors[j])[1]
+						points.push([target.x,target.y])
+						console.log('going to '+ target.index );
+						visited.push(target.index);
+						console.log(visited);
+						return target
+					}
 				}
 			}
 			console.log(points);
