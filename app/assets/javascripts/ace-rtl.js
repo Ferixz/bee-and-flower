@@ -13992,7 +13992,7 @@ var Text = function(parentEl) {
 
                     if (!onlyContents) {
                         stringBuilder.push("</div>",
-                            "<div class='ace_line' style='direction: rtl; unicode-bidi: bidi-override; height: ",
+                            "<div class='ace_line' style='direction: rtl; height: ",
                             this.config.lineHeight, "px'>"
                         );
                     }
@@ -14039,7 +14039,7 @@ var Text = function(parentEl) {
 
         if (!onlyContents) {
             stringBuilder.push(
-                "<div class='ace_line' style='direction: rtl; unicode-bidi: bidi-override; height:", 
+                "<div class='ace_line' style='direction: rtl; height:", 
                     this.config.lineHeight * (
                         this.$useLineGroups() ? 1 :this.session.getRowLength(row)
                     ), "px'>"
