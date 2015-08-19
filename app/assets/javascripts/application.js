@@ -14,5 +14,5 @@
 //= require jquery_ujs
 //= require twitter/bootstrap
 //= require turbolinks
-//= require ace
+//= require ace-rtl
 //= require_tree ./common
