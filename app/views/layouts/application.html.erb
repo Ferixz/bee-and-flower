@@ -28,7 +28,7 @@
 
 	var colors = {<% for c in Color.all%>'<%= c.name%>':'#<%= c.hex%>',<%end%>}
     var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/tomorrow_night_bright");
+    editor.setTheme("ace/theme/tomorrow_night_eighties");
     editor.getSession().setMode("ace/mode/rasa");
 	editor.setOptions({
 	    enableLiveAutocompletion: true
@@ -45,6 +45,14 @@
 		}
 		});
 	    });
+
+		function resizeAce() {
+		  return $('#editor').width($('#content').width() - 23);
+		};
+		//listen for changes
+		$(window).resize(resizeAce);
+		//set initially
+		resizeAce();
 </script>
 </div>
 </body>

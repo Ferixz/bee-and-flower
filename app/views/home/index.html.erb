@@ -1,95 +1,36 @@
+<div id="tipue_drop_fade"></div>
+<div id="container">
+<div class="grid grid-pad">
+    <div class="row profile">
+		<div class="col-lg-7">
+			<div id="graph" class="profile-sidebar">
 
-<!-- Portfolio Item Heading -->
-<div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header">زنبور عسل
-
-        </h1>
-    </div>
-</div>
-<!-- /.row -->
-
-<!-- Portfolio Item Row -->
-<div class="row">
-
-    <div id="graph" class="col-md-8">
-
-    </div>
-
-    <div class="col-md-4">
-        <h4>برنامه‌ای بنویسید که زنبور را به گل برساند</h4>
-		<br />
-
-		<pre id="editor">while neighbor is purple and current not green {
-}
-				</pre>
-
-		<div class="form-group">
-
-		<br />
-		<button type="button" id="run" class="btn btn-success pull-left">اجرا</button>
+			</div>
 		</div>
+		<div class="col-lg-5">
 
-    </div>
-
-</div>
-<p id='result' class="bg-success">...</p>
-<!-- /.row -->
-
-<!-- Related Projects Row -->
-<div class="row">
-
-    <div class="col-lg-12">
-        <h3 class="page-header">Related Projects</h3>
-    </div>
-
-    <div class="col-sm-3 col-xs-6">
-        <a href="#">
-            <img class="img-responsive portfolio-item" src="" alt="">
-        </a>
-    </div>
-
-    <div class="col-sm-3 col-xs-6">
-        <a href="#">
-            <img class="img-responsive portfolio-item" src="" alt="">
-        </a>
-    </div>
-
-    <div class="col-sm-3 col-xs-6">
-        <a href="#">
-            <img class="img-responsive portfolio-item" src="" alt="">
-        </a>
-    </div>
-
-    <div class="col-sm-3 col-xs-6">
-        <a href="#">
-            <img class="img-responsive portfolio-item" src="" alt="">
-        </a>
-    </div>
+            <div id='content' class="profile-content ">
+	<h3 class='pull-left'>Write down your code</h3>
+		        		<pre id="editor">while neighbor is purple and current not green {
+				}
+								</pre>
+								<div class="profile-userbuttons">
+									<button id='run' type="button" class="btn btn-danger btn-sm">Run</button>
+								</div>
+           </div>
+		</div>
+	</div>
 
 </div>
-<!-- /.row -->
-
-<hr>
-
-<!-- Footer -->
-<footer>
-    <div class="row">
-        <div class="col-lg-12">
-            <p>Copyright &copy; Your Website 2014</p>
-        </div>
-    </div>
-    <!-- /.row -->
-</footer>
 
 
 <script>
-var width = 750,
-height = 400;
+var width = 600,
+height = 500;
 
 var force = d3.layout.force()
 				.size([width, height])
-				.charge(-400)
+				.charge(-500)
 				.linkDistance(80)
 				.on("tick", tick)
 				.on("end", nodelist);
@@ -146,6 +87,7 @@ var graph = {
 };
 	var flower_id = 8;
 	var visited = [];
+	var infinite_iteration =  false;
 (function() {
 
 	force
@@ -162,7 +104,7 @@ var graph = {
 		.attr("class", "node")
 
 	node.append("circle")
-		.attr("r", 11)
+		.attr("r", 10)
 		.style("fill",function(d,i){return d.hex;});
 })();
 
@@ -182,11 +124,15 @@ function nodelist() {
 	var iterations = []
 	var condition_command = []
 	var dfs_track = false
+	d3.select("#bee-angry").remove();
+	d3.select("#trapped").remove();
+
 
 	function process(key,value) {
 			//console.log(key + " : "+value);
 			switch (true) {
 				case value =='goto':
+					command.push('infinite_iteration = false;');
 					command.push('current=go_to(current,')
 					break;
 				case key =='color' && command[command.length - 1] == 'current=go_to(current,':
@@ -251,7 +197,7 @@ function nodelist() {
 			case obj.tag == 'while':
 				var length = graph.nodes.length -1;
 				var iterator = iterations[iterations.length -1]
-				command.push("if (typeof current === 'undefined' || "+ iterator +" >"+length+") {  if(!fade_flower()){change_bee(current)} transition(points);break;}}");
+				command.push("if ("+ iterator +" >"+length+") { infinite_iteration = true; transition(points);throw new Error('Infinite Loop!');}}");
 				iterations.pop();
 				break;
 			case obj.tag == 'if':
@@ -279,7 +225,7 @@ function nodelist() {
 		//console.log(condition_command.join(" "))
 		//console.log(eval(condition_command.join(" ")))
 
-	     console.log(command.join(" "))
+	      //console.log(command.join(" "))
 		  eval(command.join(" "))
 	    }
 	}
@@ -385,7 +331,6 @@ function nodelist() {
 						points.push([target.x,target.y])
 						console.log('going to '+ target.index );
 						visited.push(target.index);
-						console.log(visited);
 						return target
 					}
 				}
@@ -424,7 +369,7 @@ function nodelist() {
 		var cr_y = i*25 + 10
 		var tx_y = i*25 + 15
 	 	svg.append("circle")
-			.attr("r", 9)
+			.attr("r", 7)
 			.style("fill", graph.nodes[i].hex)
 			.attr("class", "cr")
 			.attr("transform", "translate(" + 15 + "," + cr_y + ")");
@@ -432,7 +377,7 @@ function nodelist() {
 		svg.append("text")
 			.text(graph.nodes[i].color)
 			.attr("class", "lb")
-			.attr("transform", "translate(" + 40 + "," + tx_y + ")");
+			.attr("transform", "translate(" + 27 + "," + tx_y + ")");
 	}
 
 
@@ -444,32 +389,46 @@ function nodelist() {
 		.attr('height', 36)
 		.attr("xlink:href","assets/bee.png");
 
-		function fade_flower(){
+
+		function fade_flower(angry){
+			var node = find_node_by_id(visited[visited.length - 1])
 			if (flower_id == visited[visited.length - 1]){
 				console.log('Flower Reached!');
 				flower.style("opacity", 0.5)
 				return true;
 			}else
-			{ return false}
+			{
+				if(infinite_iteration){
+					var angry = svg.append("svg:image")
+								   .attr("id","bee-angry")
+								   .attr('x',0)
+								   .attr('y',0)
+							       .attr("transform", "translate(" + node.x + "," + node.y + ")")
+								   .attr('width', 36)
+				                   .attr('height', 36)
+								   .attr("xlink:href","assets/bee-angry.png");
+					var trap_x = node.x +15
+					var trap_y = node.y -65
+				    var angry = svg.append("svg:image")
+									.attr("id","trapped")
+									.attr('x',0)
+									.attr('y',0)
+									.attr("transform", "translate(" + trap_x + "," + trap_y + ")")
+									.attr('width', 80)
+							        .attr('height',80)
+									.attr("xlink:href","assets/trapped.png");
+				}
 
 		}
+	}
 
 		function find_node_by_id(id){
 			for(var i = 0; i < graph.nodes.length; i++) {
+				console.log(node[0][i].__data__, id)
 				if(node[0][i].__data__.index == id){
-					return node[0][i];
+					return node[0][i].__data__;
 				}
 			}
-
-		}
-		function change_bee(current){
-			var angry = svg.append("svg:image")
-				.attr('x',0)
-				.attr('y',0)
-				.attr("transform", "translate(" + current.x + "," + current.y + ")")
-				.attr('width', 36)
-				.attr('height', 36)
-				.attr("xlink:href","assets/bee-angry.png");
 
 		}
 
