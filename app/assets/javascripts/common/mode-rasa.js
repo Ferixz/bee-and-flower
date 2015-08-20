@@ -5,14 +5,14 @@ var oop = require("../lib/oop");
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 
 var RasaHighlightRules = function() {
-	var keywords = "while|goto|if";
+	var keywords = "تازمانیکه|بروبه|اگر";
 
 	    var builtinConstants = (
-	        "not|is"
+	        "not|است"
 	    );
 
 	    var builtinFunctions = (
-	        "current|neighbor"
+	        "فعلی|همسایه"
 	    );
 
 
