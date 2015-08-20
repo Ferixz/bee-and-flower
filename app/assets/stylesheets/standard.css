@@ -31,7 +31,7 @@ p
 {
      display: inline-block;
      padding: 10px 22px;
-     font: 300 11px/1.7 'Open Sans', sans-serif;
+     font: 300 11px/1.7 'yekan';
 	color: #fff;
 	text-transform: uppercase;
 	letter-spacing: 1px;
@@ -52,7 +52,7 @@ p
 
 h1, h2
 {
-     font: 300 32px/1.4 'Open Sans', sans-serif;
+     font: 300 32px/1.4 'yekan';
 	color: #333;
 	-webkit-font-smoothing: antialiased;
      text-rendering: optimizelegibility;
@@ -65,7 +65,7 @@ h2
 
 .low
 {
-     font: 300 15px/1.6 'Open Sans', sans-serif;
+     font: 300 15px/1.6 'yekan';
      color: #555;
 }
 .low a

@@ -45,6 +45,14 @@
 		}
 		});
 	    });
+
+		function resizeAce() {
+		  return $('#editor').width($('#content').width() - 22);
+		};
+		//listen for changes
+		$(window).resize(resizeAce);
+		//set initially
+		resizeAce();
 </script>
 </div>
 </body>
