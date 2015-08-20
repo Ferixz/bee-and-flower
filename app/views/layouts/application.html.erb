@@ -13,7 +13,7 @@
 <script>
 	var staticWordCompleter = {
 	    getCompletions: function(editor, session, pos, prefix, callback) {
-	        var wordList = [<% for c in Color.all%>'<%= c.name%>',<%end%>'goto','if', 'while', 'current', 'neighbor', 'is', 'not'];
+	        var wordList = [<% for c in Color.all%>'<%= c.name%>',<%end%>'goto','if', 'while', 'current', 'neighbor', 'is', 'not', 'همسایه', 'فعلی', 'بروبه' ,'است', 'اگر', 'تازمانیکه'];
 	        callback(null, wordList.map(function(word) {
 	            return {
 	                caption: word,

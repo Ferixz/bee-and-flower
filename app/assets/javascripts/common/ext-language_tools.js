@@ -1072,7 +1072,7 @@ var AcePopup = function(parentNode) {
             if (metaData.length + data.caption.length > maxW - 2) {
                 metaData = metaData.substr(0, maxW - data.caption.length - 3) + "\u2026"
             }
-            tokens.push({type: "rightAlignedText", value: metaData});
+            tokens.push({type: "leftAlignedText", value: metaData});
         }
         return tokens;
     };
@@ -1144,11 +1144,11 @@ var AcePopup = function(parentNode) {
         el.style.display = "";
         this.renderer.$textLayer.checkForSizeChanges();
 
-        var left = pos.left;
-        if (left + el.offsetWidth > screenWidth)
-            left = screenWidth - el.offsetWidth;
+        var right = pos.right;
+        if (right + el.offsetWidth > screenWidth)
+            right = screenWidth - el.offsetWidth;
 
-        el.style.left = left + "px";
+        el.style.right = right + "px";
 
         this._signal("show");
         lastMouseEvent = null;
@@ -1190,6 +1190,14 @@ dom.importCssString("\
     position: absolute;\
     right: 4px;\
     text-align: right;\
+    z-index: -1;\
+}\
+.ace_leftAlignedText {\
+    color: gray;\
+    display: inline-block;\
+    position: absolute;\
+    left: 4px;\
+    text-align: left;\
     z-index: -1;\
 }\
 .ace_editor.ace_autocomplete .ace_completion-highlight{\
@@ -1323,12 +1331,12 @@ var Autocomplete = function() {
             var lineHeight = renderer.layerConfig.lineHeight;
 
             var pos = renderer.$cursorLayer.getPixelPosition(this.base, true);
-            pos.left -= this.popup.getTextLeftOffset();
+            pos.right -= this.popup.getTextLeftOffset();
 
             var rect = editor.container.getBoundingClientRect();
             pos.top += rect.top - renderer.layerConfig.offset;
-            pos.left += rect.left - editor.renderer.scrollLeft;
-            pos.left += renderer.gutterWidth;
+            pos.right += document.documentElement.clientWidth - rect.right - editor.renderer.scrollLeft;
+            pos.right += renderer.gutterWidth;
 
             this.popup.show(pos, lineHeight);
         } else if (keepPopupPosition && !prefix) {
