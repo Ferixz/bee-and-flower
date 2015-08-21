@@ -1,26 +1,47 @@
-<h2>Log in</h2>
+<div class="grid grid-pad">
+	<div class="row profile">
+		<div class="col-xs-12 col-sm-8 col-md-7 col-sm-offset-2 col-md-offset-3">
+			<div id="graph" class="signin">
 
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true %>
-  </div>
+				<h2>Log in</h2>
 
-  <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password, autocomplete: "off" %>
-  </div>
+				<%= form_for(resource, as: resource_name, url: session_path(resource_name), :html=>{:role=>"form"}) do |f| %>
+				<div class="row profile">
+					<div class="col-xs-6 col-sm-6 col-md-6 pull-right">
+						<div class="form-group">
+							<%= f.email_field :email, :placeholder=>"Email", autofocus: true, :class=>"form-control input-md"  %>
+						</div>
+					</div>
+				</div>
 
-  <% if devise_mapping.rememberable? -%>
-    <div class="field">
-      <%= f.check_box :remember_me %>
-      <%= f.label :remember_me %>
-    </div>
-  <% end -%>
+				<div class="row profile">
+					<div class="col-xs-6 col-sm-6 col-md-6 pull-right">
+						<div class="form-group">
+							<%= f.password_field :password, autocomplete: "off", :class=>"form-control input-md", :placeholder=>"Password" %>
+						</div>
+					</div>
+				</div>
 
-  <div class="actions">
-    <%= f.submit "Log in" %>
-  </div>
-<% end %>
+				<% if devise_mapping.rememberable? -%>
+				<div class="field">
+					<%= f.check_box :remember_me %>
+					<%= f.label :remember_me %>
+				</div>
+				<% end -%>
 
-<%= render "devise/shared/links" %>
+				<div class="row">
+					<div class="col-xs-6 col-md-6"><a href="<%=new_user_registration_path%>" class="btn btn-primary btn-block btn-lg">Sign Up</a></div>
+					<div class="col-xs-6 col-md-6">
+						<%= content_tag :button, :type => :submit, :class => "btn btn-success btn-block btn-lg",  :tabindex=>"7" do %>
+						<i class="icon-ok bigger-110"></i>
+						<%=t :submit%>
+						<% end %>
+					</div>
+				</div>
+				<% end %>
+
+			</div>
+<hr class="colorgraph">
+		</div>
+	</div>
+</div>

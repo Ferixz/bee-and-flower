@@ -30,20 +30,15 @@ p
 .btn
 {
      display: inline-block;
-     padding: 10px 22px;
-     font: 300 11px/1.7 'yekan';
-	color: #fff;
-	text-transform: uppercase;
-	letter-spacing: 1px;
+     padding: 10px;
+     font: 300 12px/1.9 'yekan';
+		color: #fff;
+		text-transform: uppercase;
+		letter-spacing: 1px;
      text-decoration: none;
      text-align: center;
      vertical-align: middle;
-     background-color: #a0d468;
      border: 0;
-}
-.btn:hover
-{
-     background-color: #8cc152;
 }
 
 

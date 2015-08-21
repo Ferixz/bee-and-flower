@@ -42,7 +42,7 @@ Licensed under MIT
 
 /* Profile container */
 .profile {
-  margin: 10px 0;
+  margin: 5px 0;
 }
 
 /* Profile sidebar */
@@ -241,3 +241,23 @@ hr {
     -ms-transform: rotate(360deg);
     transform: rotate(360deg);
 }
+
+.signin {
+  margin-top: 20px;
+  padding: 20px;
+  background: #fff;
+}
+
+.btn-primary {
+	background:#f0776c;
+}
+.btn-primary:hover {
+	background:#fecf71;
+}
+.btn-success {
+		background:#c49cde;
+}
+.btn-success:hover {
+	background:#db9dbe;
+}
+

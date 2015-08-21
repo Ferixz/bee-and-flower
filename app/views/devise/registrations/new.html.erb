@@ -1,29 +1,82 @@
-<h2>Sign up</h2>
+<div class="grid grid-pad">
+	<div class="row profile">
+		<div class="col-xs-12 col-sm-8 col-md-7 col-sm-offset-2 col-md-offset-3">
+			<div id="graph" class="signin">
+				<%= form_for(resource, as: resource_name, url: registration_path(resource_name), :html=>{:role=>"form"}) do |f| %>
+				<h2>Please Sign Up <small>It's free and always will be.</small></h2>
+				<%= devise_error_messages! %>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= devise_error_messages! %>
+				<div class="row profile">
+					<div class="col-xs-6 col-sm-6 col-md-6 pull-right">
+						<div class="form-group">
+							<%= f.email_field :email, :placeholder=>"Email", autofocus: true, :class=>"form-control input-md"  %>
+						</div>
+					</div>
+				</div>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true %>
-  </div>
+				<div class="row profile">
+					<div class="col-xs-6 col-sm-6 col-md-6 pull-right">
+						<div class="form-group">
+							<%= f.password_field :password, autocomplete: "off", :class=>"form-control input-md", :placeholder=>"Password" %>
+						</div>
+					</div>
+				</div>
 
-  <div class="field">
-    <%= f.label :password %>
-    <% if @validatable %>
-    <em>(<%= @minimum_password_length %> characters minimum)</em>
-    <% end %><br />
-    <%= f.password_field :password, autocomplete: "off" %>
-  </div>
+				<div class="row profile">
+					<div class="col-xs-6 col-sm-6 col-md-6 pull-right">
+						<div class="form-group">
+							<%= f.password_field :password_confirmation, autocomplete: "off", :class=>"form-control input-md", :placeholder=>"Password Confirmation" %>
+						</div>
+					</div>
+				</div>
 
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "off" %>
-  </div>
+				<div class="row profile">
+					<div class="col-xs-9 col-sm-9 col-md-9 pull-right">
+						By clicking <strong class="label label-primary">Register</strong>, you agree to the <a href="#" data-toggle="modal" data-target="#t_and_c_m">Terms and Conditions</a> set out by this site, including our Cookie Use.
+					</div>
+				</div>
+				<br />
+				<div class="row">
+					<div class="col-xs-6 col-md-6"><a href="<%= new_user_session_path%>" class="btn btn-primary btn-block btn-lg">Sign In</a></div>
+					<div class="col-xs-6 col-md-6">
+						<%= content_tag :button, :type => :submit, :class => "btn btn-success btn-block btn-lg",  :tabindex=>"7" do %>
+						<i class="icon-ok bigger-110"></i>
+						<%=t :submit%>
+						<% end %>
+					</div>
 
-  <div class="actions">
-    <%= f.submit "Sign up" %>
-  </div>
-<% end %>
+				</div>
+				<% end %>
+			</div>
+				<hr class="colorgraph">
+		</div>
+	</div>
+	<!-- Modal -->
+	<div class="modal fade" id="t_and_c_m" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">Ã—</button>
+					<h4 class="modal-title" id="myModalLabel">Terms & Conditions</h4>
+				</div>
+				<div class="modal-body">
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique, itaque, modi, aliquam nostrum at sapiente consequuntur natus odio reiciendis perferendis rem nisi tempore possimus ipsa porro delectus quidem dolorem ad.</p>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique, itaque, modi, aliquam nostrum at sapiente consequuntur natus odio reiciendis perferendis rem nisi tempore possimus ipsa porro delectus quidem dolorem ad.</p>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique, itaque, modi, aliquam nostrum at sapiente consequuntur natus odio reiciendis perferendis rem nisi tempore possimus ipsa porro delectus quidem dolorem ad.</p>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique, itaque, modi, aliquam nostrum at sapiente consequuntur natus odio reiciendis perferendis rem nisi tempore possimus ipsa porro delectus quidem dolorem ad.</p>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique, itaque, modi, aliquam nostrum at sapiente consequuntur natus odio reiciendis perferendis rem nisi tempore possimus ipsa porro delectus quidem dolorem ad.</p>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique, itaque, modi, aliquam nostrum at sapiente consequuntur natus odio reiciendis perferendis rem nisi tempore possimus ipsa porro delectus quidem dolorem ad.</p>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique, itaque, modi, aliquam nostrum at sapiente consequuntur natus odio reiciendis perferendis rem nisi tempore possimus ipsa porro delectus quidem dolorem ad.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">I Agree</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
 
-<%= render "devise/shared/links" %>
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+
+
+
