@@ -1,19 +1,50 @@
-<p id="notice"><%= notice %></p>
+<div class="row profile">
+	<div class="col-md-4 col-sm-6 col-xs-12">
+		<div class="signin">
+			<div class="text-center">
+			<%= image_tag @profile.avatar.url(:medium), :class=>"avatar img-circle img-thumbnail" %>
+			</div>
+		</div>
+		<hr class="colorgraph">
+	</div>
 
-<p>
-  <strong>User:</strong>
-  <%= @profile.user_id %>
-</p>
+	<!-- edit form column -->
+	<div class="col-md-8 col-sm-6 col-xs-12 personal-info">
+		<div class="signin">
+			<div class="alert alert-info alert-dismissable">
+				<a class="panel-close close" data-dismiss="alert">×</a>
+				<i class="fa fa-coffee"></i>
+				This is an <strong>.alert</strong>. Use this to show important messages to the user.
+			</div>
+			<h3>Personal info</h3>
 
-<p>
-  <strong>Name:</strong>
-  <%= @profile.name %>
-</p>
+				<table class="table table-user-information">
+					<tbody>
+						<tr>
+							<td class="col-sm-1">Name:</td>
+							<td class="col-md-4"><%= @profile.name %></td>
+						</tr>
+						<tr>
+							<td class="col-sm-1">Sure name:</td>
+							<td class="col-md-4"><%= @profile.sure_name %></td>
+						</tr>
+						<tr></tr>
+					</tr>
 
-<p>
-  <strong>Sure name:</strong>
-  <%= @profile.sure_name %>
-</p>
+				</tbody>
+			</table>
 
-<%= link_to 'Edit', edit_profile_path(@profile) %> |
-<%= link_to 'Back', profiles_path %>
+		<p id="notice"><%= notice %></p>
+
+		<%= link_to 'Edit', edit_profile_path(@profile) %> |
+		<%= link_to 'Back', profiles_path %>
+
+	</div>
+	<hr class="colorgraph">
+</div>
+
+</div>
+</div>
+
+
+

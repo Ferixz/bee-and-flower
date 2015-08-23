@@ -1,29 +1,65 @@
-<%= form_for(@profile) do |f| %>
-  <% if @profile.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@profile.errors.count, "error") %> prohibited this profile from being saved:</h2>
+<%= form_for(@profile, :html => {:class=>"form-horizontal", :role => "form",  :multipart => true}) do |f| %>
+<div class="col-md-4 col-sm-6 col-xs-12">
+	<div class="signin">
+		<div class="text-center">
 
-      <ul>
-      <% @profile.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
+			<%= image_tag @profile.avatar.url(:medium), :class=>"avatar img-circle img-thumbnail" %>
+			<h6>Upload a different photo...</h6>
+			<%= f.file_field :avatar,  :class => "text-center center-block well well-sm" %>
 
-  <div class="field">
-    <%= f.label :user_id %><br>
-    <%= f.number_field :user_id %>
-  </div>
-  <div class="field">
-    <%= f.label :name %><br>
-    <%= f.text_field :name %>
-  </div>
-  <div class="field">
-    <%= f.label :sure_name %><br>
-    <%= f.text_field :sure_name %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+		</div>
+	</div>
+	<hr class="colorgraph">
+</div>
+
+<!-- edit form column -->
+<div class="col-md-8 col-sm-6 col-xs-12 personal-info">
+	<div class="signin">
+		<div class="alert alert-info alert-dismissable">
+			<a class="panel-close close" data-dismiss="alert">×</a>
+			<i class="fa fa-coffee"></i>
+			This is an <strong>.alert</strong>. Use this to show important messages to the user.
+		</div>
+		<h3>Personal info</h3>
+
+		<% if @profile.errors.any? %>
+		<div id="error_explanation">
+			<h2><%= pluralize(@profile.errors.count, "error") %> prohibited this profile from being saved:</h2>
+
+			<ul>
+				<% @profile.errors.full_messages.each do |message| %>
+				<li><%= message %></li>
+				<% end %>
+			</ul>
+		</div>
+		<% end %>
+
+		<div class="form-group">
+			<%= f.label :name, :class => "col-md-2 control-label pull-right" %>
+			<div class="col-md-8 pull-right">
+				<%= f.text_field :name, :class => "form-control" %>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<%= f.label :sure_name, :class => "col-md-2 control-label pull-right" %>
+			<div class="col-md-8 pull-right">
+				<%= f.text_field :sure_name, :class => "form-control" %>
+			</div>
+		</div>
+
+		<div class="form-group ">
+			<div class="col-md-4 pull-left">
+				<%= content_tag :button, :type => :submit, :class => "btn btn-success",  :tabindex=>"3" do %>
+				<i class="icon-ok bigger-110"></i>
+				<%=t :submit%>
+				<% end %>
+				<span></span>
+				<input class="btn btn-primary" value="Cancel" type="reset">
+			</div>
+		</div>
+
+	</div>
+	<hr class="colorgraph">
+</div>
 <% end %>

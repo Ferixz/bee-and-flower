@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  nodes_list: MyText
+  links_list: MyText
+  number_of_nodes: 1
+
+two:
+  nodes_list: MyText
+  links_list: MyText
+  number_of_nodes: 1

@@ -49,3 +49,4 @@ gem "less-rails" #Sprockets (what Rails 3.1 uses for its asset pipeline) support
 gem "twitter-bootstrap-rails"
 gem "rails_12factor", group: :production
 gem 'devise'
+gem "paperclip", "~> 4.3"

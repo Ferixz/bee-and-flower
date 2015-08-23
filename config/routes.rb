@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  resources :levels
+
+  resources :games
+
   resources :profiles
 
   devise_for :users
