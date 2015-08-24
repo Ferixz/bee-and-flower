@@ -1,19 +1,569 @@
-<p id="notice"><%= notice %></p>
+<div id="tipue_drop_fade"></div>
+<div id="container">
+<div class="grid grid-pad">
+    <div class="row-fluid profile">
+		<div class="col-xs-7 col-md-7 col-lg-7">
+			<div id="graph" class="profile-sidebar">
 
-<p>
-  <strong>Nodes list:</strong>
-  <%= @level.nodes_list %>
-</p>
+			</div>
+			<hr class="colorgraph">
+		</div>
+		<div class="col-xs-5 col-md-5 col-lg-5">
 
-<p>
-  <strong>Links list:</strong>
-  <%= @level.links_list %>
-</p>
+            <div id='content' class="profile-content ">
+			  <div class="page-header">
+			    <h3 class="text-center">زنبور عسل</h3>
 
-<p>
-  <strong>Number of nodes:</strong>
-  <%= @level.number_of_nodes %>
-</p>
+			  </div>
 
-<%= link_to 'Edit', edit_level_path(@level) %> |
-<%= link_to 'Back', levels_path %>
+		        		<pre id="editor">تازمانیکه همسایه یاسی است{
+						بروبه یاسی؛
+						}
+						</pre>
+								<div class="profile-userbuttons">
+								<button id='run' type="button" class="btn btn-success btn-sm"><%=t :run%></button>
+								</div>
+           </div>
+<hr class="colorgraph">
+		</div>
+
+	</div>
+
+</div>
+
+<script>
+function translate(phrase, lang){
+dict = {
+	'است':'is',
+	'نیست':'not',
+	'همسایه':'neighbor',
+	'فعلی':'current',
+	'گام جلوتر':'hops away',
+	<%for color in Color.all%>
+	'<%=color.fa_name%>':'<%= color.name%>',
+	<%end%>
+}
+if (lang == 'fa'){
+	for (var i in dict) {
+		if ( dict[i] == phrase){
+			return i
+		}
+	}
+
+} else {
+for (var i in dict) {
+	if ( i == phrase){
+		console.log(i)
+		return dict[i]
+	}
+}
+}
+
+}
+</script>
+<script>
+var width = 600,
+height = 500;
+
+var force = d3.layout.force()
+				.size([width, height])
+				.charge(-500)
+				.linkDistance(80)
+				.on("tick", tick)
+				.on("end", nodelist);
+
+var svg = d3.select("#graph").append("svg")
+			.attr("width", width)
+			.attr("height", height);
+
+var link = svg.selectAll(".link"),
+	node = svg.selectAll(".node");
+
+var graph = {
+	"nodes": [
+		<%= raw @level.nodes_list%>
+	],
+	"links": [
+		<%= raw @level.links_list%>
+	]
+};
+	var flower_id = 5;
+	var visited = [];
+	var visited_nodes = [];
+	var infinite_iteration =  false;
+(function() {
+
+	force
+		.nodes(graph.nodes)
+		.links(graph.links)
+		.start();
+
+	link = link.data(graph.links)
+		.enter().append("line")
+		.attr("class", "link");
+
+	node = node.data(graph.nodes)
+		.enter().append("g")
+		.attr("class", "node")
+
+	node.append("circle")
+	    .attr("id",function(d,i){return "circle" + i;} )
+		.attr("r", 10)
+		.style("fill",function(d,i){return d.hex;});
+})();
+
+function nodelist() {
+	$('#run').click(function(){
+	var points = []
+
+
+
+	var output = parser.parse(editor.getSession().getValue());
+	var result = $("#result").text(jsDump.parse(output));
+
+	var res = jQuery.parseJSON(jsDump.parse(output));
+	//console.log(res.replace(/قرمز/g, "red"))
+	//var current = node[0][0];
+	var current = link[0][0].__data__.source
+	points.push([current.x,current.y])
+	var command = []
+	var iterations = []
+	var condition_command = []
+	var dfs_track = false
+	d3.select("#bee-angry").remove();
+	d3.select("#trapped").remove();
+	d3.select("#trappedtext").remove();
+	d3.select("#trappedtext1").remove();
+
+
+	function process(key,value) {
+			//console.log(key + " : "+value);
+			switch (true) {
+				case value =='goto':
+					command.push('infinite_iteration = false;');
+					command.push('current=go_to(current,')
+					break;
+				case key =='color' && command[command.length - 1] == 'current=go_to(current,':
+						command.push("['" + translate(value) +"'")
+					break;
+				case key =='other':
+					for(var i = 0; i < value.length; i++) {
+						command.push(",'" + translate(value[i].color) +"'")
+					}
+					command.push(']);')
+					break;
+				case value =='if' :
+					command.push('if (');
+					break;
+				case value =='while' || value =='تازمانیکه':
+					var iterator = randid(2)
+					iterations.push(iterator)
+					command.push('var ' +  iterator+ '=0;')
+					command.push('while (')
+					break;
+				case key == 'node':
+					var vl = translate(value)
+					condition_command.push(vl)
+					break;
+				case key == 'statement':
+					condition_command.push('(')
+					break;
+				case key == 'verb':
+					condition_command.push(translate(value))
+					break;
+				case key == 'color':
+						condition_command.push(translate(value))
+						var logic = 'extract_cond(current,'+"'"+condition_command[condition_command.length - 3]+"'"+','+"'"+ condition_command[condition_command.length - 2]+"'"+','+"'"+condition_command[condition_command.length - 1]+"'"+')'
+		  			condition_command.pop();condition_command.pop();condition_command.pop();
+						condition_command.push(logic)
+						break;
+				case key == 'op':
+					switch (true) {
+						case value == 'or':
+							condition_command.push('||')
+							break;
+						case value == 'and':
+							condition_command.push('&&')
+							break;
+						}
+					break;
+				case key == 'body':
+					var length = graph.nodes.length + 1
+					var iterator = iterations[iterations.length -1]
+					if (command[command.length - 1] == 'while ('){
+						command.push('(' + condition_command.join(" ") +') && '+ iterator +'< '+ length +'){' +iterator +'++;')
+						}
+						break;
+				}
+	}
+
+	function post_process(obj){
+		if (typeof obj.statement != 'undefined'){
+			condition_command.push(')')
+		}
+		if (typeof obj.tag != "undefined"){
+			switch (true) {
+			case obj.tag == 'while':
+				var length = graph.nodes.length -1;
+				var iterator = iterations[iterations.length -1]
+				command.push("if ("+ iterator +" >"+length+") { infinite_iteration = true; transition(points);throw new Error('Infinite Loop!');}}");
+				iterations.pop();
+				break;
+			case obj.tag == 'if':
+				command.push("}");
+				break;
+			}
+		}
+	}
+
+	var pendingRecursive = 0;
+	function traverse(o,func) {
+	    for (var i in o) {
+	        func.apply(this,[i,o[i]]);
+	        if (o[i] !== null && typeof(o[i])=="object") {
+				pendingRecursive++;
+				//console.log(pendingRecursive);
+	            traverse(o[i],func);
+				console.log(visited)
+				post_process(o[i]);
+				pendingRecursive--;
+	        }
+	    }
+		if (pendingRecursive == 0){
+		  command.push('transition(points);')
+		//console.log(condition_command.join(" "))
+		//console.log(eval(condition_command.join(" ")))
+
+	      //console.log(command.join(" "))
+		  eval(command.join(" "))
+	    }
+	}
+
+	traverse(res,process);
+
+	function extract_cond(current, cond_node , cond_verb, cond_color) {
+			//console.log(parseInt(cond_node), typeof parseInt(cond_node));
+			console.log(current, cond_node , cond_verb, cond_color);
+			switch (true) {
+				case !isNaN(parseInt(cond_node)):
+					if (cond_verb == 'is'){
+						//console.log(parseInt(cond_node));
+						if (dfs(current,0, parseInt(cond_node), [], cond_color)){ return true}else{return false}
+					} else {
+						if (!dfs(current,0, parseInt(cond_node), [], cond_color)){return true}else{return false}
+					}
+					break;
+				case cond_node == 'current':
+					if (cond_verb == 'is'){
+						if (current.color == cond_color){ return true}else{return false}
+					} else {
+						if (current.color != cond_color){ console.log(current.index +' not current '+ cond_color); return true}else{return false}
+					}
+					break;
+				case cond_node == 'neighbor':
+					if ( cond_verb == 'is'){
+						if (neigbor_color(current,cond_color)){
+							console.log(current.index +' neighbor is '+ cond_color);
+							return true
+						}else{
+							console.log(current.index +'s neighbor not '+ cond_color);
+							return false
+						}
+					} else {
+						if (!neigbor_color(current,cond_color)){
+								console.log(current.index +' neighbor is '+ cond_color);
+								return true
+						}else{
+								console.log(current.index +'s neighbor not '+ cond_color);
+								return false}
+					}
+					break;
+			}
+		}
+
+
+
+
+		function dfs(current_node,current_depth, desired_depth, visited_dfs, color){
+			console.log(current_node,current_depth, desired_depth)
+			if(current_depth == desired_depth) {
+				if (current_node.color == color){
+				}
+		    	return;
+		  	}
+			var n = neighbors(current_node)
+
+			for(var i = 0; i < n.length; i++) {
+			//	console.log()
+				if (indexOf.call(visited_dfs, n[i].index) == -1){
+				//	console.log(n[i].index+ ' vs ', visited_dfs,'result: ' + indexOf.call(visited_dfs, n[i].index))
+					visited_dfs.push(n[i].index);
+					dfs(n[i], current_depth + 1, desired_depth, visited_dfs, color);
+				}
+			}
+		}
+
+		function neighbors(current){
+			var neighbors = []
+			for(var i = 0; i < graph.links.length; i++) {
+				var source = link[0][i].__data__.source
+				var target = link[0][i].__data__.target
+				var current_index = current.index
+				if (source.index == current_index) {
+					neighbors.push(target);
+				}
+				if (target.index == current_index){
+					neighbors.push(source);
+				}
+				if (i == graph.links.length -1){return neighbors}
+			}
+		}
+
+		function neigbor_color(current, color){
+			//console.log(current.index, color)
+			var has = false
+			for(var i = 0; i < graph.links.length; i++) {
+			 	has = has || connected_and_color(i, current, color)[0]
+				if (i == graph.links.length -1){
+					if (has) { return has}else{return false}
+				}
+			}
+		}
+
+		function go_to(current, colors) {
+			console.log(current)
+
+			for(var j = 0; j < colors.length; j++) {
+				for(var i = 0; i < graph.links.length; i++) {
+					if (connected_and_color(i, current, colors[j])[0]) {
+						var target = connected_and_color(i, current, colors[j])[1]
+						points.push([target.x,target.y])
+						current.color = 'grey'
+						current.hex = '#848482'
+
+						//console.log(current)
+						console.log('going to '+ target.index );
+						visited.push(target.index);
+						visited_nodes.push(target);
+						return target
+					}
+				}
+			}
+			console.log(points);
+			transition(points);
+		}
+
+	function connected_and_color(index, current, color) {
+		//console.log(current)
+		var source = link[0][index].__data__.source
+		var target = link[0][index].__data__.target
+		//var current_index = current.__data__.index
+		var current_index = current.index
+		var valid = 0
+		if (source.index == current_index && target.color == color) {
+			next_hop = target;
+			valid = 1;
+		}
+		if (target.index == current_index  && source.color == color){
+			next_hop = source;
+			valid = 1;
+		}
+		if (valid == 1){return [true, next_hop]} else { return [false, false]}
+	}
+	});
+
+	var flower = svg.append("svg:image")
+		.attr('x',node[0][flower_id].__data__.x)
+		.attr('y',node[0][flower_id].__data__.y)
+		.attr('width', 40)
+		.attr('height', 40)
+		.attr("xlink:href","/assets/Blue-Flower-icon.png")
+
+		var unique = {};
+		var distinct = [];
+		for( var i in graph.nodes ){
+		 if( typeof(unique[graph.nodes[i].hex]) == "undefined"){
+		  distinct.push([graph.nodes[i].hex, graph.nodes[i].color]);
+		 }
+		 unique[graph.nodes[i].hex] = 0;
+		}
+
+	for (i in distinct){
+		var cr_y = i*25 + 10
+		var tx_y = i*25 + 15
+	 	svg.append("circle")
+			.attr("r", 7)
+			.style("fill", distinct[i][0])
+			.attr("class", "cr")
+			.attr("transform", "translate(" + 15 + "," + cr_y + ")");
+
+		svg.append("text")
+			.text(translate(distinct[i][1], 'fa'))
+			.attr("class", "lb")
+			.attr("transform", "translate(" + 27 + "," + tx_y + ")");
+	}
+
+
+	var bee = svg.append("svg:image")
+		.attr('x',0)
+		.attr('y',0)
+		.attr("transform", "translate(" + node[0][0].__data__.x + "," + node[0][0].__data__.y + ")")
+		.attr('width', 36)
+		.attr('height', 36)
+		.attr("xlink:href","/assets/bee.png");
+
+
+		function fade_flower(angry){
+			var node = find_node_by_id(visited[visited.length - 1])
+			if (flower_id == visited[visited.length - 1]){
+				console.log('Flower Reached!');
+				flower.style("opacity", 0.5)
+
+				var trap_x = node.x -2
+				var trap_y = node.y -105
+			    var angry = svg.append("svg:image")
+								.attr("id","trapped")
+								.attr('x',0)
+								.attr('y',0)
+								.attr("transform", "translate(" + trap_x + "," + trap_y + ")")
+								.attr('width', 120)
+						        .attr('height',120)
+								.attr("xlink:href","/assets/comment.png");
+				var text_x = node.x +37
+				var text_y = node.y -65
+					svg.append("text")
+					   .attr("id","trappedtext")
+					   .text('آخ جون')
+					   .attr("class", "cm")
+					   .attr("transform", "translate(" + text_x + "," + text_y + ")");
+				return true;
+			}else
+			{
+				if(infinite_iteration){
+					var angry = svg.append("svg:image")
+								   .attr("id","bee-angry")
+								   .attr('x',0)
+								   .attr('y',0)
+							       .attr("transform", "translate(" + node.x + "," + node.y + ")")
+								   .attr('width', 36)
+				                   .attr('height', 36)
+								   .attr("xlink:href","/assets/bee-angry.png");
+					var trap_x = node.x -2
+					var trap_y = node.y -105
+				    var angry = svg.append("svg:image")
+									.attr("id","trapped")
+									.attr('x',0)
+									.attr('y',0)
+									.attr("transform", "translate(" + trap_x + "," + trap_y + ")")
+									.attr('width', 120)
+							        .attr('height',120)
+									.attr("xlink:href","/assets/comment.png");
+					var text_x = node.x +15
+					var text_y = node.y -65
+						svg.append("text")
+						   .attr("id","trappedtext")
+						   .text('فکر کنم تو چرخه')
+						   .attr("class", "cm")
+						   .attr("transform", "translate(" + text_x + "," + text_y + ")");
+				    var text1_x = node.x +13
+				    var text1_y = node.y -50
+						svg.append("text")
+						   .attr("id","trappedtext1")
+						   .text('بی نهایت افتادم')
+						   .attr("class", "cm")
+						   .attr("transform", "translate(" + text1_x + "," + text1_y + ")");
+				} else {
+
+							var angry = svg.append("svg:image")
+										   .attr("id","bee-angry")
+										   .attr('x',0)
+										   .attr('y',0)
+									       .attr("transform", "translate(" + node.x + "," + node.y + ")")
+										   .attr('width', 36)
+						                   .attr('height', 36)
+										   .attr("xlink:href","/assets/bee-cry.png");
+							var trap_x = node.x -2
+							var trap_y = node.y -105
+						    var angry = svg.append("svg:image")
+											.attr("id","trapped")
+											.attr('x',0)
+											.attr('y',0)
+											.attr("transform", "translate(" + trap_x + "," + trap_y + ")")
+											.attr('width', 120)
+									        .attr('height',120)
+											.attr("xlink:href","/assets/comment.png");
+							var text_x = node.x +15
+							var text_y = node.y -65
+								svg.append("text")
+								   .attr("id","trappedtext")
+								   .text('من که گلی نمی بینم')
+								   .attr("class", "cm")
+								   .attr("transform", "translate(" + text_x + "," + text_y + ")");
+						  				}
+
+		}
+	}
+
+		function find_node_by_id(id){
+			for(var i = 0; i < graph.nodes.length; i++) {
+				console.log(node[0][i].__data__, id)
+				if(node[0][i].__data__.index == id){
+					return node[0][i].__data__;
+				}
+			}
+
+		}
+
+		function transition(points) {
+
+			var path = svg.append("path")
+				.data([points])
+				.attr("d", d3.svg.line()
+				.tension(1)
+				.interpolate("monotone"));
+
+			bee.transition()
+				.duration(4000)
+				.attrTween("transform", translateAlong(path.node()))
+				.each("end",fade_flower);
+		}
+
+		function translateAlong(path) {
+		  var l = path.getTotalLength();
+			console.log(path);
+		  return function(d, i, a) {
+		    return function(t) {
+		      var p = path.getPointAtLength(t * l);
+			  for(v in visited_nodes){
+				if ((Math.abs(visited_nodes[v].px  - p.x) < 3) &&(Math.abs(visited_nodes[v].py  - p.y) < 3)){
+					d3.select("#circle"+visited_nodes[v].index).style("fill", "#848482");
+				}
+				}
+		      return "translate(" + p.x + "," + p.y + ")";
+		    };
+		  };
+		}
+
+}
+
+function tick() {
+	link.attr("x1", function(d) { return d.source.x; })
+		.attr("y1", function(d) { return d.source.y; })
+		.attr("x2", function(d) { return d.target.x; })
+		.attr("y2", function(d) { return d.target.y; });
+
+	node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+}
+
+function dblclick(d) {
+	d3.select(this).classed("fixed", d.fixed = false);
+}
+
+function dragstart(d) {
+	d3.select(this).classed("fixed", d.fixed = true);
+}
+
+
+
+	</script>

@@ -5,14 +5,14 @@ var oop = require("../lib/oop");
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 
 var RasaHighlightRules = function() {
-	var keywords = "تازمانیکه|بروبه|اگر";
+	var keywords = "while|goto|if";
 
 	    var builtinConstants = (
-	        "not|است"
+	        "not|is"
 	    );
 
 	    var builtinFunctions = (
-	        "فعلی|همسایه"
+	        "current|neighbor"
 	    );
 
 
@@ -35,7 +35,7 @@ var RasaHighlightRules = function() {
             regex : "'.*?'"
         }, {
             token : keywordMapper,
-            regex : "[ا-یa-zA-Z_$][ا-ی۰-۹a-zA-Z0-9_$]*"
+            regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
         }, {
             token : "keyword.operator",
             regex : "\\+|\\/|\\/\\/|%|<@>|@>|<@|&|\\^|~|<|>|<=|=>|==|!=|<>|="

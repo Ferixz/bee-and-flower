@@ -11,9 +11,11 @@
 <div id='container' class="container">
 <%= yield %>
 <script>
+
+
 	var staticWordCompleter = {
 	    getCompletions: function(editor, session, pos, prefix, callback) {
-	        var wordList = [<% for c in Color.all%>'<%= c.name%>',<%end%>'goto','if', 'while', 'current', 'neighbor', 'is', 'not', 'همسایه', 'فعلی', 'بروبه' ,'است', 'اگر', 'تازمانیکه'];
+	        var wordList = [<% for c in Color.all%>'<%= c.fa_name%>',<%end%>'goto','if', 'while', 'current', 'neighbor', 'is', 'not', 'همسایه', 'فعلی', 'بروبه' ,'است', 'اگر', 'تازمانیکه'];
 	        callback(null, wordList.map(function(word) {
 	            return {
 	                caption: word,
@@ -26,7 +28,7 @@
 	}
 
 
-	var colors = {<% for c in Color.all%>'<%= c.name%>':'#<%= c.hex%>',<%end%>}
+	var colors = {<% for c in Color.all%>'<%= c.fa_name%>':'#<%= c.hex%>',<%end%>}
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/tomorrow_night_bright");
     editor.getSession().setMode("ace/mode/rasa");

@@ -61,7 +61,15 @@ circle {
 
 .lb {
  direction:ltr;
-font-size:12px;
+ font-size:12px;
+}
+
+.cm {
+ direction:ltr;
+font-family:'yekan';
+ font-size:13px;
+ font-weight: bold;
+ fill: #FF0505;
 }
 
 #editor {

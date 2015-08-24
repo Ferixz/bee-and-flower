@@ -4,7 +4,7 @@
 		<div class="text-center">
 
 			<%= image_tag @profile.avatar.url(:medium), :class=>"avatar img-circle img-thumbnail" %>
-			<h6>Upload a different photo...</h6>
+			<h6><%=t :upload_a_different_photo%></h6>
 			<%= f.file_field :avatar,  :class => "text-center center-block well well-sm" %>
 
 		</div>
@@ -15,12 +15,13 @@
 <!-- edit form column -->
 <div class="col-md-8 col-sm-6 col-xs-12 personal-info">
 	<div class="signin">
+	<!--
 		<div class="alert alert-info alert-dismissable">
 			<a class="panel-close close" data-dismiss="alert">×</a>
 			<i class="fa fa-coffee"></i>
 			This is an <strong>.alert</strong>. Use this to show important messages to the user.
-		</div>
-		<h3>Personal info</h3>
+		</div>-->
+		<h4><%=t :please_enter_your_profile_data%></h4>
 
 		<% if @profile.errors.any? %>
 		<div id="error_explanation">
@@ -50,12 +51,12 @@
 
 		<div class="form-group ">
 			<div class="col-md-4 pull-left">
-				<%= content_tag :button, :type => :submit, :class => "btn btn-success",  :tabindex=>"3" do %>
+				<%= content_tag :button, :type => :submit, :class => "btn btn-success",  :tabindex=>"5" do %>
 				<i class="icon-ok bigger-110"></i>
 				<%=t :submit%>
 				<% end %>
 				<span></span>
-				<input class="btn btn-primary" value="Cancel" type="reset">
+				<%= link_to t(:cancel), current_user.profile, :class => "btn btn-primary",  :tabindex=>"3" %>
 			</div>
 		</div>
 

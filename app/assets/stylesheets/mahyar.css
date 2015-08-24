@@ -6,6 +6,8 @@
 
 @font-face{font-family:'yekan';src:url('/assets/BYekan.eot'),url('/assets/BYekan.woff'),url('/assets/BYekan.ttf');}
 
+@font-face{font-family:'Monaco';src:url('/assets/monaco-webfont.eot'),url('/assets/monaco-webfont.woff'),url('/assets/monaco-webfont.ttf');}
+
 body,
 input,
 button,
@@ -276,3 +278,18 @@ hr {
 .toppad
 {margin-top:20px;
 }
+
+.imageContainer {
+	  padding-top: 30px;
+      width:200px;
+	  font-family: 'yekan' ;
+	  font-size:5.5em;
+	  text-align:center;
+      height:200px;
+      background-image: url('/assets/beefl.png');
+}
+
+.imageContainer:hover {
+	transition: all .2s ease-in-out;
+}
+
