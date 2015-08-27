@@ -309,3 +309,100 @@ integer "integer"
   = digits:[0-9]+ { return digits.join(""); }
 
 hexdigit = [0-9a-f]i
+----------
+rasa
+  = ws value:value ws { return value; }
+
+begin_array     = ws "[" ws
+begin_clause    = ws "{" ws
+end_array       = ws "]" ws
+end_clause      = ws "}" ws
+value_separator = ws "," ws
+or = ws "یا" ws
+and = ws "و" ws
+semicolon = ws '؛' ws
+
+ws "whitespace" = [ \t\n\r]*
+
+/* ----- 3. Values ----- */
+
+value
+  = false
+  / statements
+
+false = "false" { return false; }
+
+
+/* ----- 4. Objects ----- */
+
+statement
+      = goto
+      / while
+      / if
+goto
+      = 'بروبه ' ws color:color ws other:other_colors* semicolon
+      { return { tag:"goto", color:color, other }; }
+
+other_colors
+      = or  color:color
+      { return { color}; }
+
+color
+      = 'سفید'
+      / 'سیاه'
+      / 'زرد'
+      / 'یاسی'
+      / 'نارنجی'
+      / 'آسمانی'
+      / 'قرمز'
+      / 'خردلی'
+      / 'طوسی'
+      / 'سبز'
+      / 'سرخابی'
+      / 'آبی'
+      / 'صورتی'
+      / 'بنفش'
+      / 'olive_green'
+       { return value}
+
+while
+      = 'تازمانیکه ' ws condition:disjunction* begin_clause body:statements ws "}" ws
+      { return { tag:"while", condition:condition , body:body }; }
+
+if
+      = 'اگر ' ws condition:disjunction* begin_clause body:statements ws "}" ws
+      { return { tag:"if", condition:condition , body:body }; }
+
+statements
+      = statement*
+
+disjunction
+  = left:conjunction or right:disjunction { return{left, op:'or', right}; }
+  / conjunction
+
+conjunction
+  = left:primary and right:conjunction {  return{left, op:'and', right}; }
+  / primary
+
+primary
+  = condition
+  / "(" disjunction:disjunction ")" {  return{statement:disjunction}; }
+
+
+
+condition
+      =  node:node  ws color:color ws verb:verb ws
+     { return { node:node, verb:verb , color:color }; }
+
+node
+      = 'فعلی'
+      / 'همسایه'
+      / hops:integer ws 'گام جلوتر' { return hops }
+verb
+      = 'است'
+      / 'نیست'
+
+integer "integer"
+  = digits:[0-9]+ { return digits.join(""); }
+
+hexdigit = [0-9a-f]i

@@ -17,9 +17,10 @@
 			  </div>
 
 		        		<pre id="editor">تازمانیکه همسایه یاسی است{
-						بروبه یاسی؛
-						}
+	بروبه یاسی؛
+}
 						</pre>
+						<div id="build-message">test</div>
 								<div class="profile-userbuttons">
 								<button id='run' type="button" class="btn btn-success btn-sm"><%=t :run%></button>
 								</div>
@@ -30,7 +31,13 @@
 	</div>
 
 </div>
-
+<script>
+function buildErrorMessage(e) {
+  return e.line !== undefined && e.column !== undefined
+    ? "Line " + e.line + ", column " + e.column + ": " + e.message
+    : e.message;
+}
+</script>
 <script>
 function translate(phrase, lang){
 dict = {
@@ -87,7 +94,7 @@ var graph = {
 		<%= raw @level.links_list%>
 	]
 };
-	var flower_id = 5;
+	var flower_id = <%= @level.flower_id%>;
 	var visited = [];
 	var visited_nodes = [];
 	var infinite_iteration =  false;
@@ -117,8 +124,14 @@ function nodelist() {
 	var points = []
 
 
+	try {
+		var output = parser.parse(editor.getSession().getValue());
+	} catch (e) {
+		console.log(e)
+     $("#build-message").attr("class", "message error").text(buildErrorMessage(e));
 
-	var output = parser.parse(editor.getSession().getValue());
+  //    var result = false;
+    }
 	var result = $("#result").text(jsDump.parse(output));
 
 	var res = jQuery.parseJSON(jsDump.parse(output));
@@ -152,10 +165,12 @@ function nodelist() {
 					}
 					command.push(']);')
 					break;
-				case value =='if' :
+				case value =='if'  || value =='اگر' :
+					condition_command = condition_command.slice(condition_command.length);
 					command.push('if (');
 					break;
 				case value =='while' || value =='تازمانیکه':
+				    condition_command = condition_command.slice(condition_command.length);
 					var iterator = randid(2)
 					iterations.push(iterator)
 					command.push('var ' +  iterator+ '=0;')
@@ -193,6 +208,9 @@ function nodelist() {
 					if (command[command.length - 1] == 'while ('){
 						command.push('(' + condition_command.join(" ") +') && '+ iterator +'< '+ length +'){' +iterator +'++;')
 						}
+					if (command[command.length - 1] == 'if ('){
+							command.push('(' + condition_command.join(" ")+')' +'){')
+							}
 						break;
 				}
 	}
@@ -206,11 +224,11 @@ function nodelist() {
 			case obj.tag == 'while':
 				var length = graph.nodes.length -1;
 				var iterator = iterations[iterations.length -1]
-				command.push("if ("+ iterator +" >"+length+") { infinite_iteration = true; transition(points);throw new Error('Infinite Loop!');}}");
+				command.push("if ("+ iterator +" >"+length+") {  transition(points);if(checkrep(visited)){infinite_iteration = true; throw new Error('Infinite Loop!');}}}");
 				iterations.pop();
 				break;
 			case obj.tag == 'if':
-				command.push("}");
+				command.push("};");
 				break;
 			}
 		}
@@ -234,8 +252,9 @@ function nodelist() {
 		//console.log(condition_command.join(" "))
 		//console.log(eval(condition_command.join(" ")))
 
-	      //console.log(command.join(" "))
-		  eval(command.join(" "))
+	      console.log(command.join(" "))
+		eval(command.join(" "))
+		//eval("var cv=0;while((extract_cond(current,'neighbor','is','green')) && cv< 11){cv++;if (extract_cond(current,'neighbor','not','buff')){infinite_iteration = false;current=go_to(current, ['green' ]);};if (cv >9){infinite_iteration = true;transition(points);throw new Error('Infinite Loop!');}}transition(points);");
 	    }
 	}
 

@@ -29,6 +29,7 @@
 
 
 	var colors = {<% for c in Color.all%>'<%= c.fa_name%>':'#<%= c.hex%>',<%end%>}
+	var color_intensity = {<% for c in Color.all%>'<%= c.fa_name%>':'<%= c.intensity%>',<%end%>}
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/tomorrow_night_bright");
     editor.getSession().setMode("ace/mode/rasa");
@@ -42,9 +43,13 @@
 			var value = $(this).text()
 
 			var hex = colors[value]
+			var intensity = color_intensity[value]
 			if (typeof hex != undefined){
 			$(this).css("background-color", hex);
-		}
+			}
+			if (intensity == 'low'){
+			$(this).css("color", 'black');
+			}
 		});
 	    });
 
