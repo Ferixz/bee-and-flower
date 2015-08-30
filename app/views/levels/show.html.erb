@@ -12,7 +12,7 @@
 
             <div id='content' class="profile-content ">
 			  <div class="page-header">
-			    <h3 class="text-center">زنبور عسل</h3>
+			    <h4 class="text-center">برنامه ی خود را در ویرایشگر زیر بنویسید:</h4>
 
 			  </div>
 
@@ -20,9 +20,13 @@
 	بروبه یاسی؛
 }
 						</pre>
-						<div id="build-message">test</div>
+						<div id="build-message" class="hidden"><i class='glyphicon glyphicon-repeat'></i></div>
 								<div class="profile-userbuttons">
-								<button id='run' type="button" class="btn btn-success btn-sm"><%=t :run%></button>
+								<button id='reset' type="button" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-repeat"> </i> <%=t :reset%></button>
+								<button id='run' type="button" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-chevron-left"> </i>  <%=t :run%></button>
+
+
+
 								</div>
            </div>
 <hr class="colorgraph">
@@ -32,10 +36,61 @@
 
 </div>
 <script>
+
+
+	var staticWordCompleter = {
+	    getCompletions: function(editor, session, pos, prefix, callback) {
+	        var wordList = [<% for c in Color.all%>'<%= c.fa_name%>',<%end%>'goto','if', 'while', 'current', 'neighbor', 'is', 'not', 'همسایه', 'فعلی', 'بروبه' ,'است', 'اگر', 'تازمانیکه'];
+	        callback(null, wordList.map(function(word) {
+	            return {
+	                caption: word,
+	                value: word,
+	                meta: "static"
+	            };
+	        }));
+
+	    }
+	}
+
+
+	var colors = {<% for c in Color.all%>'<%= c.fa_name%>':'#<%= c.hex%>',<%end%>}
+	var color_intensity = {<% for c in Color.all%>'<%= c.fa_name%>':'<%= c.intensity%>',<%end%>}
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/tomorrow_night_eighties");
+    editor.getSession().setMode("ace/mode/rasa");
+	editor.setOptions({
+	    enableLiveAutocompletion: true
+	});
+	editor.completers = [staticWordCompleter]
+	 editor.renderer.on('afterRender', function(e) {
+	      // $('.ace_identifier').css("background-color","lightBlue");
+		$('.ace_identifier').each(function(i, obj) {
+			var value = $(this).text()
+
+			var hex = colors[value]
+			var intensity = color_intensity[value]
+			if (typeof hex != undefined){
+			$(this).css("background-color", hex);
+			}
+			if (intensity == 'low'){
+			$(this).css("color", 'black');
+			}
+		});
+	    });
+
+		function resizeAce() {
+		  return $('#editor').width($('#content').width() - 22);
+		};
+		//listen for changes
+		$(window).resize(resizeAce);
+		//set initially
+		resizeAce();
+</script>
+<script>
 function buildErrorMessage(e) {
-  return e.line !== undefined && e.column !== undefined
-    ? "Line " + e.line + ", column " + e.column + ": " + e.message
-    : e.message;
+	if (e.line !== undefined && e.column !== undefined){
+	 return " <%=t :error_in%> <%=t :line%> " + e.line + ", <%=t :column%> " + e.column;
+	}
 }
 </script>
 <script>
@@ -60,7 +115,6 @@ if (lang == 'fa'){
 } else {
 for (var i in dict) {
 	if ( i == phrase){
-		console.log(i)
 		return dict[i]
 	}
 }
@@ -70,12 +124,12 @@ for (var i in dict) {
 </script>
 <script>
 var width = 600,
-height = 500;
+height = 600;
 
 var force = d3.layout.force()
 				.size([width, height])
-				.charge(-500)
-				.linkDistance(80)
+				.charge(-400)
+				.linkDistance(70)
 				.on("tick", tick)
 				.on("end", nodelist);
 
@@ -95,6 +149,7 @@ var graph = {
 	]
 };
 	var flower_id = <%= @level.flower_id%>;
+	var nodes_temp = jQuery.extend(true, {}, graph.nodes);
 	var visited = [];
 	var visited_nodes = [];
 	var infinite_iteration =  false;
@@ -126,9 +181,9 @@ function nodelist() {
 
 	try {
 		var output = parser.parse(editor.getSession().getValue());
+		$("#build-message").attr("class", "").text('');
 	} catch (e) {
-		console.log(e)
-     $("#build-message").attr("class", "message error").text(buildErrorMessage(e));
+     $("#build-message").attr("class", "alert alert-danger").text(buildErrorMessage(e));
 
   //    var result = false;
     }
@@ -143,10 +198,7 @@ function nodelist() {
 	var iterations = []
 	var condition_command = []
 	var dfs_track = false
-	d3.select("#bee-angry").remove();
-	d3.select("#trapped").remove();
-	d3.select("#trappedtext").remove();
-	d3.select("#trappedtext1").remove();
+	clean_up_d3 ();
 
 
 	function process(key,value) {
@@ -242,7 +294,7 @@ function nodelist() {
 				pendingRecursive++;
 				//console.log(pendingRecursive);
 	            traverse(o[i],func);
-				console.log(visited)
+				//console.log(visited)
 				post_process(o[i]);
 				pendingRecursive--;
 	        }
@@ -252,21 +304,18 @@ function nodelist() {
 		//console.log(condition_command.join(" "))
 		//console.log(eval(condition_command.join(" ")))
 
-	      console.log(command.join(" "))
+	     // console.log(command.join(" "))
 		eval(command.join(" "))
-		//eval("var cv=0;while((extract_cond(current,'neighbor','is','green')) && cv< 11){cv++;if (extract_cond(current,'neighbor','not','buff')){infinite_iteration = false;current=go_to(current, ['green' ]);};if (cv >9){infinite_iteration = true;transition(points);throw new Error('Infinite Loop!');}}transition(points);");
 	    }
 	}
 
 	traverse(res,process);
 
 	function extract_cond(current, cond_node , cond_verb, cond_color) {
-			//console.log(parseInt(cond_node), typeof parseInt(cond_node));
-			console.log(current, cond_node , cond_verb, cond_color);
+		//	console.log(current, cond_node , cond_verb, cond_color);
 			switch (true) {
 				case !isNaN(parseInt(cond_node)):
 					if (cond_verb == 'is'){
-						//console.log(parseInt(cond_node));
 						if (dfs(current,0, parseInt(cond_node), [], cond_color)){ return true}else{return false}
 					} else {
 						if (!dfs(current,0, parseInt(cond_node), [], cond_color)){return true}else{return false}
@@ -304,18 +353,15 @@ function nodelist() {
 
 
 		function dfs(current_node,current_depth, desired_depth, visited_dfs, color){
-			console.log(current_node,current_depth, desired_depth)
+			//console.log(current_node,current_depth, desired_depth)
 			if(current_depth == desired_depth) {
 				if (current_node.color == color){
 				}
 		    	return;
 		  	}
 			var n = neighbors(current_node)
-
 			for(var i = 0; i < n.length; i++) {
-			//	console.log()
 				if (indexOf.call(visited_dfs, n[i].index) == -1){
-				//	console.log(n[i].index+ ' vs ', visited_dfs,'result: ' + indexOf.call(visited_dfs, n[i].index))
 					visited_dfs.push(n[i].index);
 					dfs(n[i], current_depth + 1, desired_depth, visited_dfs, color);
 				}
@@ -350,8 +396,6 @@ function nodelist() {
 		}
 
 		function go_to(current, colors) {
-			console.log(current)
-
 			for(var j = 0; j < colors.length; j++) {
 				for(var i = 0; i < graph.links.length; i++) {
 					if (connected_and_color(i, current, colors[j])[0]) {
@@ -359,8 +403,6 @@ function nodelist() {
 						points.push([target.x,target.y])
 						current.color = 'grey'
 						current.hex = '#848482'
-
-						//console.log(current)
 						console.log('going to '+ target.index );
 						visited.push(target.index);
 						visited_nodes.push(target);
@@ -368,7 +410,7 @@ function nodelist() {
 					}
 				}
 			}
-			console.log(points);
+			//console.log(points);
 			transition(points);
 		}
 
@@ -376,7 +418,6 @@ function nodelist() {
 		//console.log(current)
 		var source = link[0][index].__data__.source
 		var target = link[0][index].__data__.target
-		//var current_index = current.__data__.index
 		var current_index = current.index
 		var valid = 0
 		if (source.index == current_index && target.color == color) {
@@ -422,110 +463,74 @@ function nodelist() {
 			.attr("transform", "translate(" + 27 + "," + tx_y + ")");
 	}
 
-
+	bee = add_bee();
+	function add_bee(){
 	var bee = svg.append("svg:image")
+		.attr("id","bee")
 		.attr('x',0)
 		.attr('y',0)
 		.attr("transform", "translate(" + node[0][0].__data__.x + "," + node[0][0].__data__.y + ")")
 		.attr('width', 36)
 		.attr('height', 36)
 		.attr("xlink:href","/assets/bee.png");
-
-
-		function fade_flower(angry){
-			var node = find_node_by_id(visited[visited.length - 1])
-			if (flower_id == visited[visited.length - 1]){
-				console.log('Flower Reached!');
-				flower.style("opacity", 0.5)
-
-				var trap_x = node.x -2
-				var trap_y = node.y -105
-			    var angry = svg.append("svg:image")
-								.attr("id","trapped")
-								.attr('x',0)
-								.attr('y',0)
-								.attr("transform", "translate(" + trap_x + "," + trap_y + ")")
-								.attr('width', 120)
-						        .attr('height',120)
-								.attr("xlink:href","/assets/comment.png");
-				var text_x = node.x +37
-				var text_y = node.y -65
-					svg.append("text")
-					   .attr("id","trappedtext")
-					   .text('آخ جون')
-					   .attr("class", "cm")
-					   .attr("transform", "translate(" + text_x + "," + text_y + ")");
-				return true;
-			}else
-			{
-				if(infinite_iteration){
-					var angry = svg.append("svg:image")
-								   .attr("id","bee-angry")
-								   .attr('x',0)
-								   .attr('y',0)
-							       .attr("transform", "translate(" + node.x + "," + node.y + ")")
-								   .attr('width', 36)
-				                   .attr('height', 36)
-								   .attr("xlink:href","/assets/bee-angry.png");
-					var trap_x = node.x -2
-					var trap_y = node.y -105
-				    var angry = svg.append("svg:image")
-									.attr("id","trapped")
-									.attr('x',0)
-									.attr('y',0)
-									.attr("transform", "translate(" + trap_x + "," + trap_y + ")")
-									.attr('width', 120)
-							        .attr('height',120)
-									.attr("xlink:href","/assets/comment.png");
-					var text_x = node.x +15
-					var text_y = node.y -65
-						svg.append("text")
-						   .attr("id","trappedtext")
-						   .text('فکر کنم تو چرخه')
-						   .attr("class", "cm")
-						   .attr("transform", "translate(" + text_x + "," + text_y + ")");
-				    var text1_x = node.x +13
-				    var text1_y = node.y -50
-						svg.append("text")
-						   .attr("id","trappedtext1")
-						   .text('بی نهایت افتادم')
-						   .attr("class", "cm")
-						   .attr("transform", "translate(" + text1_x + "," + text1_y + ")");
-				} else {
-
-							var angry = svg.append("svg:image")
-										   .attr("id","bee-angry")
-										   .attr('x',0)
-										   .attr('y',0)
-									       .attr("transform", "translate(" + node.x + "," + node.y + ")")
-										   .attr('width', 36)
-						                   .attr('height', 36)
-										   .attr("xlink:href","/assets/bee-cry.png");
-							var trap_x = node.x -2
-							var trap_y = node.y -105
-						    var angry = svg.append("svg:image")
-											.attr("id","trapped")
-											.attr('x',0)
-											.attr('y',0)
-											.attr("transform", "translate(" + trap_x + "," + trap_y + ")")
-											.attr('width', 120)
-									        .attr('height',120)
-											.attr("xlink:href","/assets/comment.png");
-							var text_x = node.x +15
-							var text_y = node.y -65
-								svg.append("text")
-								   .attr("id","trappedtext")
-								   .text('من که گلی نمی بینم')
-								   .attr("class", "cm")
-								   .attr("transform", "translate(" + text_x + "," + text_y + ")");
-						  				}
-
-		}
+	return bee;
 	}
 
+		function aftermath(){
+			revert_colored(visited);
+			var node = find_node_by_id(visited[visited.length - 1])
+			switch (true){
+				case flower_id == visited[visited.length - 1]:
+					flower.style("opacity", 0.5)
+					bee_reaction(node, 2, 105, 37, 65 ,'آخ جون', '')
+					return true
+					break;
+				case infinite_iteration == true:
+					bee_reaction(node,2, 105,15,65,'افتادم تو چرخه','bee-angry')
+					break;
+				case flower_id != visited[visited.length - 1] && visited.length != 0:
+					bee_reaction(node,2, 105,15,65,'من که گلی نمی بینم', 'bee-cry')
+					break;
+				case visited.length == 0:
+
+					bee_reaction(link[0][0].__data__.source,2, 105,15,65,'اینطوری نمیتونم برم', 'bee-cry')
+					break;
+				}
+			}
+
+		function bee_reaction(node, cm_x, cm_y, t_x, t_y ,text, bee){
+			if (bee != ''){
+				var angry = svg.append("svg:image")
+							   .attr("id", bee)
+							   .attr('x',0)
+							   .attr('y',0)
+						       .attr("transform", "translate(" + node.x + "," + node.y + ")")
+							   .attr('width', 36)
+			                   .attr('height', 36)
+							   .attr("xlink:href","/assets/"+bee+".png");
+
+			}
+			var trap_x = node.x -cm_x
+			var trap_y = node.y -cm_y
+		    var angry = svg.append("svg:image")
+							.attr("id","trapped")
+							.attr('x',0)
+							.attr('y',0)
+							.attr("transform", "translate(" + trap_x + "," + trap_y + ")")
+							.attr('width', 120)
+					        .attr('height',120)
+							.attr("xlink:href","/assets/comment.png");
+			var text_x = node.x +t_x
+			var text_y = node.y -t_y
+				svg.append("text")
+				   .attr("id","trappedtext")
+				   .text(text)
+				   .attr("class", "cm")
+				   .attr("transform", "translate(" + text_x + "," + text_y + ")");
+
+		}
 		function find_node_by_id(id){
 			for(var i = 0; i < graph.nodes.length; i++) {
-				console.log(node[0][i].__data__, id)
 				if(node[0][i].__data__.index == id){
 					return node[0][i].__data__;
 				}
@@ -533,8 +538,17 @@ function nodelist() {
 
 		}
 
-		function transition(points) {
 
+		function revert_colored(visited){
+			for(var i = 0; i < graph.nodes.length; i++) {
+				node[0][i].__data__.color = nodes_temp[i].color
+				node[0][i].__data__.hex = nodes_temp[i].hex
+				//console.log(node[0][i].__data__.color, nodes_temp[i].color);
+			}
+		}
+
+		function transition(points) {
+			console.log(points);
 			var path = svg.append("path")
 				.data([points])
 				.attr("d", d3.svg.line()
@@ -544,17 +558,16 @@ function nodelist() {
 			bee.transition()
 				.duration(4000)
 				.attrTween("transform", translateAlong(path.node()))
-				.each("end",fade_flower);
+				.each("end", aftermath);
 		}
 
 		function translateAlong(path) {
 		  var l = path.getTotalLength();
-			console.log(path);
 		  return function(d, i, a) {
 		    return function(t) {
 		      var p = path.getPointAtLength(t * l);
 			  for(v in visited_nodes){
-				if ((Math.abs(visited_nodes[v].px  - p.x) < 3) &&(Math.abs(visited_nodes[v].py  - p.y) < 3)){
+				if ((Math.abs(visited_nodes[v].px  - p.x) < 20) &&(Math.abs(visited_nodes[v].py  - p.y) < 20)){
 					d3.select("#circle"+visited_nodes[v].index).style("fill", "#848482");
 				}
 				}
@@ -564,6 +577,26 @@ function nodelist() {
 		}
 
 }
+
+
+	$('#reset').click(function(){
+	clean_up_d3 ();
+
+	})
+
+ function clean_up_d3 (){
+	d3.select("#bee-holder").remove();
+	d3.select("#bee-angry").remove();
+	d3.select("#bee-cry").remove();
+	d3.select("#trapped").remove();
+	d3.select("#trappedtext").remove();
+	d3.select("#trappedtext1").remove();
+	d3.select("#bee").attr("transform", "translate(" + node[0][0].__data__.x + "," + node[0][0].__data__.y + ")");
+	for(var i = 0; i < graph.nodes.length; i++) {
+		d3.select("#circle" + i).style("fill", node[0][i].__data__.hex);
+	}
+}
+
 
 function tick() {
 	link.attr("x1", function(d) { return d.source.x; })

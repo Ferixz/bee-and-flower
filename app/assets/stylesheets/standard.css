@@ -31,7 +31,7 @@ p
 {
      display: inline-block;
      padding: 10px;
-     font: 300 12px/1.9 'yekan';
+     font: 300 12px/1.9 'koodak';
 		color: #fff;
 		text-transform: uppercase;
 		letter-spacing: 1px;
@@ -47,7 +47,7 @@ p
 
 h1, h2
 {
-     font: 300 32px/1.4 'yekan';
+     font: 300 32px/1.4 'koodak';
 	color: #333;
 	-webkit-font-smoothing: antialiased;
      text-rendering: optimizelegibility;
@@ -60,7 +60,7 @@ h2
 
 .low
 {
-     font: 300 15px/1.6 'yekan';
+     font: 300 15px/1.6 'koodak';
      color: #555;
 }
 .low a

@@ -6,18 +6,22 @@
 
 @font-face{font-family:'yekan';src:url('/assets/BYekan.eot'),url('/assets/BYekan.woff'),url('/assets/BYekan.ttf');}
 
-@font-face{font-family:'Monaco';src:url('/assets/monaco-webfont.eot'),url('/assets/monaco-webfont.woff'),url('/assets/monaco-webfont.ttf');}
+@font-face{font-family:'koodak';src:url('/assets/BKoodakBold.eot'),url('/assets/BKoodakBold.woff'),url('/assets/BKoodakBold.ttf');}
 
 body,
 input,
 button,
 select,
 textarea,
-p, h3,
+p, h3,h4,
 .navbar-search .search-query {
-	font-family: 'yekan' ;
+	font-family: 'koodak' ;
 }
 
+.alert {
+  font-family: 'koodak';
+  font-size: 15px;
+}
 .navbar-custom {
     background-color:#666;
     color:#ffffff;
@@ -252,12 +256,14 @@ hr {
 
 .btn-primary {
 	background:#f0776c;
+	border-color: #f0776c;
 }
 .btn-primary:hover {
 	background:#fecf71;
 }
 .btn-success {
-		background:#c49cde;
+	background:#c49cde;
+	border-color: #c49cde;
 }
 .btn-success:hover {
 	background:#db9dbe;
@@ -282,8 +288,8 @@ hr {
 .imageContainer {
 	  padding-top: 30px;
       width:200px;
-	  font-family: 'yekan' ;
-	  font-size:5.5em;
+	  font-family: 'koodak' ;
+	  font-size:6em;
 	  text-align:center;
       height:200px;
       background-image: url('/assets/beefl.png');
@@ -293,3 +299,20 @@ hr {
 	transition: all .2s ease-in-out;
 }
 
+.glyphicon {
+top: 3px;
+margin-left:2px;
+}
+
+.dropdown-menu.pull-right {
+    left: 0;
+    right: auto;
+}
+
+.navbar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand {
+    margin-left: 10px;
+}
+
+.form-horizontal .form-group {
+	font-family: 'koodak';
+}

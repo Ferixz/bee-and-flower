@@ -1,59 +1,69 @@
 <nav class="navbar navbar-default navbar-inverse" role="navigation">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
+    <div class="navbar-header navbar-right">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand active" href="#">Rassa.io</a>
+      <a class="navbar-brand active" href="#">  </a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-
-        <li class="active"><%= link_to t(:home), root_path%></li>
-<% if current_user%>
-        <li class="active"><%= link_to t(:profile), current_user.profile%></li>
-<%end%>
-      </ul>
       <ul class="nav navbar-nav navbar-right">
 
+      <li class="active"><%= link_to t(:levels), levels_path%></li>
+<% if current_user%>
+        <li class="active"><%= link_to t(:profile), current_user.profile%></li>
+
+<%end%>
+<li class="active"><%= link_to t(:home), root_path%></li>
+      </ul>
+      <ul class="nav navbar-nav ">
+<% if current_user.blank?%>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b><%=t :login%></b> <span class="caret"></span></a>
-			<ul id="login-dp" class="dropdown-menu">
+			<ul id="login-dp" class="dropdown-menu pull-right">
 				<li>
 					 <div class="row">
 							<div class="col-md-12">
-								Login via
-								 <form class="form" role="form" method="post" action="login" accept-charset="UTF-8" id="login-nav">
-										<div class="form-group">
-											 <label class="sr-only" for="exampleInputEmail2">Email address</label>
-											 <input type="email" class="form-control" id="exampleInputEmail2" placeholder="Email address" required>
-										</div>
-										<div class="form-group">
-											 <label class="sr-only" for="exampleInputPassword2">Password</label>
-											 <input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password" required>
-                                             <div class="help-block text-right"><a href="">Forget the password ?</a></div>
-										</div>
-										<div class="form-group">
-											 <button type="submit" class="btn btn-primary btn-block">Sign in</button>
-										</div>
-										<div class="checkbox">
-											 <label>
-											 <input type="checkbox"> keep me logged-in
-											 </label>
-										</div>
-								 </form>
+								<span class='pull-right'>
+							وارد شوید
+							</span>
+
+							<%= form_for(:user, :url => session_path(:user), :html =>{:class => "form"}) do |f| %>
+							<div class="form-group">
+							  <%= f.text_field :email, :class => "form-control" %>
+							</div>
+							<div class="form-group">
+							  <%= f.password_field :password, :class => "form-control" %>
+							</div>
+							 <div class="help-block text-right"><a href="">رمز عبور خود را فراموش کرده اید؟</a></div>
+
+
+							  <button type="submit" class="btn btn-primary btn-block"><%=t :sign_in%></button>
+
+							<div class="checkbox pull-right">
+							  <%= f.check_box :remember_me %><%=t :remember_me %>
+							</div>
+
+
+							<% end %>
+
+
 							</div>
 							<div class="bottom text-center">
-								New here ? <a href="#"><b>Join Us</b></a>
+								اولین حضور شماست؟
+								 <a href="<%= new_user_registration_path%>"><b>به ما بپیوندید</b></a>
 							</div>
 					 </div>
 				</li>
+				<%else%>
+				<li><%= link_to t(:logout) ,destroy_user_session_path%></li>
+				<%end%>
 			</ul>
         </li>
       </ul>

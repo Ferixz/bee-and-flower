@@ -7,11 +7,11 @@ function randid(l)
         text += possible.charAt(Math.floor(Math.random() * possible.length));
 
     return text;
-}
+};
 
 
 function checkrep(original) {
-	console.log('--------:'+ original)
+	//console.log('--------:'+ original)
 	var repeated = false;
 	var compressed = [];
 	var copy = original.slice(0);
@@ -23,7 +23,7 @@ function checkrep(original) {
 				delete copy[w];
 			}
 		}
-			console.log(myCount);
+			//console.log(myCount);
 		if (myCount > 1) {
 		//	var a = new Object();
 		//	a.value = original[i];
@@ -32,7 +32,7 @@ function checkrep(original) {
 			repeated = repeated || true;
 		}
 
-		console.log(repeated);
+		//console.log(repeated);
 	}
 
 	if(repeated){return true}else{return false};
