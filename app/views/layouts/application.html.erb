@@ -20,14 +20,14 @@
 	<meta name="theme-color" content="#ffffff">
   <title>Rassa.io</title>
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+
   <%= csrf_meta_tags %>
 </head>
 <body>
 <%= render "layouts/header"%>
 <div id='container' class="container">
 <%= yield %>
-
+<%= javascript_include_tag 'application'%>
 </div>
 </body>
 </html>
