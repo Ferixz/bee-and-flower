@@ -17,8 +17,10 @@
     <% @colors.each do |color| %>
       <tr>
         <td><%= color.name %></td>
+		<td><%= color.fa_name %></td>
         <td><%= color.iscc_number %></td>
         <td><%= color.hex %></td>
+		<td><%= color.intensity %></td>
         <td><%= link_to 'Show', color %></td>
         <td><%= link_to 'Edit', edit_color_path(color) %></td>
         <td><%= link_to 'Destroy', color, method: :delete, data: { confirm: 'Are you sure?' } %></td>
