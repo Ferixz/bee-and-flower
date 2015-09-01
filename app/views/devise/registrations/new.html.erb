@@ -3,7 +3,7 @@
 		<div class="col-xs-12 col-sm-8 col-md-7 col-sm-offset-2 col-md-offset-3">
 			<div id="graph" class="signin">
 				<%= form_for(resource, as: resource_name, url: registration_path(resource_name), :html=>{:role=>"form"}) do |f| %>
-				<h2>Please Sign Up <small>It's free and always will be.</small></h2>
+				<h2>ثبت نام</h2>
 				<%= devise_error_messages! %>
 
 				<div class="row profile">
@@ -32,16 +32,18 @@
 
 				<div class="row profile">
 					<div class="col-xs-9 col-sm-9 col-md-9 pull-right">
-						By clicking <strong class="label label-primary">Register</strong>, you agree to the <a href="#" data-toggle="modal" data-target="#t_and_c_m">Terms and Conditions</a> set out by this site, including our Cookie Use.
+						با ثبت نام در این وبسایت شما متعهد می گردید که
+<a href="#" data-toggle="modal" data-target="#t_and_c_m">قوانین و مقررات</a>
+را رعایت کنید.
 					</div>
 				</div>
 				<br />
 				<div class="row">
-					<div class="col-xs-6 col-md-6"><a href="<%= new_user_session_path%>" class="btn btn-primary btn-block btn-lg">Sign In</a></div>
+					<div class="col-xs-6 col-md-6"><a href="<%= new_user_session_path%>" class="btn btn-primary btn-block btn-lg"><Sign In><%=t :sign_in%></a></div>
 					<div class="col-xs-6 col-md-6">
 						<%= content_tag :button, :type => :submit, :class => "btn btn-success btn-block btn-lg",  :tabindex=>"7" do %>
 						<i class="icon-ok bigger-110"></i>
-						<%=t :submit%>
+						<%=t :register%>
 						<% end %>
 					</div>
 
@@ -60,13 +62,7 @@
 					<h4 class="modal-title" id="myModalLabel">Terms & Conditions</h4>
 				</div>
 				<div class="modal-body">
-					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique, itaque, modi, aliquam nostrum at sapiente consequuntur natus odio reiciendis perferendis rem nisi tempore possimus ipsa porro delectus quidem dolorem ad.</p>
-					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique, itaque, modi, aliquam nostrum at sapiente consequuntur natus odio reiciendis perferendis rem nisi tempore possimus ipsa porro delectus quidem dolorem ad.</p>
-					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique, itaque, modi, aliquam nostrum at sapiente consequuntur natus odio reiciendis perferendis rem nisi tempore possimus ipsa porro delectus quidem dolorem ad.</p>
-					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique, itaque, modi, aliquam nostrum at sapiente consequuntur natus odio reiciendis perferendis rem nisi tempore possimus ipsa porro delectus quidem dolorem ad.</p>
-					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique, itaque, modi, aliquam nostrum at sapiente consequuntur natus odio reiciendis perferendis rem nisi tempore possimus ipsa porro delectus quidem dolorem ad.</p>
-					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique, itaque, modi, aliquam nostrum at sapiente consequuntur natus odio reiciendis perferendis rem nisi tempore possimus ipsa porro delectus quidem dolorem ad.</p>
-					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique, itaque, modi, aliquam nostrum at sapiente consequuntur natus odio reiciendis perferendis rem nisi tempore possimus ipsa porro delectus quidem dolorem ad.</p>
+					<p></p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-primary" data-dismiss="modal">I Agree</button>
