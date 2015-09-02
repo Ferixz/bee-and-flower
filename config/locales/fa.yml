@@ -206,6 +206,7 @@ fa:
             sure_name: "نام خانوادگی"
             birthdate: 'تاریخ تولد'
             sex: 'جنسیت'
+            organization: 'موسسه آموزشی'
         user:
             email: 'ایمیل'
             login: 'نام کاربر'
@@ -271,6 +272,7 @@ fa:
   sign_in: 'ورود'
   registeration: 'روند ثبت نام'
   remember_me: 'مرا به خاطر بسپار'
+  organization: 'موسسه آموزشی'
   compelete_profile: 'تکمیل پروفایل'
   ulpoad_avatar: 'بارگذاری عکس'
   enter_your_sign_up_data: 'اطلاعات ثبت نام را وارد کنید'

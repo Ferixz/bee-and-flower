@@ -15,10 +15,16 @@ class ProfilesController < ApplicationController
   # GET /profiles/new
   def new
     @profile = Profile.new
+    @jalali = JalaliDate.to_jalali(Date.today)
   end
 
   # GET /profiles/1/edit
   def edit
+    if !@profile.birthdate.blank?
+      @jalali = JalaliDate.to_jalali(@profile.birthdate)
+    else
+      @jalali = JalaliDate.to_jalali(Date.today)
+    end
   end
 
   # POST /profiles
@@ -26,6 +32,7 @@ class ProfilesController < ApplicationController
   def create
     @profile = Profile.new(profile_params)
     @profile.user_id = current_user.id
+    @profile.birthdate = JalaliDate.to_gregorian(params[:ja_birth_yyyy],params[:ja_birth_mm],params[:ja_birth_dd])
     respond_to do |format|
       if @profile.save
         format.html { redirect_to @profile, notice: 'Profile was successfully created.' }
@@ -40,6 +47,10 @@ class ProfilesController < ApplicationController
   # PATCH/PUT /profiles/1
   # PATCH/PUT /profiles/1.json
   def update
+    @profile = current_user.profile
+    if !params[:ja_birth_yyyy].blank?
+      @profile.birthdate = JalaliDate.to_gregorian(params[:ja_birth_yyyy],params[:ja_birth_mm],params[:ja_birth_dd])
+    end
     respond_to do |format|
       if @profile.update(profile_params)
         format.html { redirect_to @profile, notice: 'Profile was successfully updated.' }
@@ -69,6 +80,6 @@ class ProfilesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def profile_params
-      params.require(:profile).permit(:user_id, :name, :sure_name, :avatar )
+      params.require(:profile).permit(:user_id, :name, :sure_name, :avatar, :birthdate, :sex, :organization )
     end
 end

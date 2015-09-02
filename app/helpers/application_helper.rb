@@ -10,4 +10,13 @@ module ApplicationHelper
   def devise_mapping
     @devise_mapping ||= Devise.mappings[:user]
   end
+
+
+  def sexs
+    @options = [
+      [t(:male), t(:male)],
+      [t(:female) , t(:female)]
+    ]
+    return @options
+  end
 end

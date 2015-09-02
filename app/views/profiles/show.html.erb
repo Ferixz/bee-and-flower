@@ -28,13 +28,28 @@
 							<td class="col-sm-1"><%=t Profile.human_attribute_name(:sure_name)%>:</td>
 							<td class="col-md-4"><%= @profile.sure_name %></td>
 						</tr>
+						<% if !@profile.birthdate.blank?%>
+						<tr>
+							<td class="col-sm-1"><%=t Profile.human_attribute_name(:birthdate)%>:</td>
+							<td class="col-md-4">	<span>	<% @jalali = JalaliDate.to_jalali(@profile.birthdate)%>
+									<%= @jalali.year%>/<%= @jalali.month%>/<%= @jalali.day%></span></td>
+						</tr>
+						<tr>
+							<td class="col-sm-1"><%=t Profile.human_attribute_name(:sex)%>:</td>
+							<td class="col-md-4"><%= @profile.sex %></td>
+						</tr>
+						<tr>
+							<td class="col-sm-1"><%=t Profile.human_attribute_name(:organization)%>:</td>
+							<td class="col-md-4"><%= @profile.organization %></td>
+						</tr>
+						<%end%>
 						<tr></tr>
 					</tr>
 
 				</tbody>
 			</table>
 
-		<p id="notice"><%= notice %></p>
+		<p id="notice"><% notice %></p>
 
 
 		<%= link_to t(:edit), edit_profile_path(@profile), :class => "btn btn-success",  :tabindex=>"3" %>

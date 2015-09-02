@@ -49,6 +49,30 @@
 			</div>
 		</div>
 
+		<div class="form-group">
+			<%= f.label :birthdate ,:class =>"col-md-2 control-label  pull-right" %>
+			<div class="col-md-8 pull-right">
+				<%=t :day%><%= select_tag  "ja_birth_dd", options_for_select(1..31, @jalali.day) %>/
+				<%=t :month%><%= select_tag "ja_birth_mm", options_for_select(1..12, @jalali.month) %>/
+				<%=t :year%><%= select_year(@jalali.year, {:start_year => 1300, :end_year => 1400}, {:name =>"ja_birth_yyyy"}) %>
+				<% f.date_select :birthdate ,:class => "col-xs-10 col-sm-5"%>
+			</div>
+		</div>
+		<div class="form-group">
+			<%= f.label :sex ,:class =>"col-md-2 control-label  pull-right" %>
+			<div class="col-md-8 pull-right">
+				<%= f.select( :sex, sexs) %>
+				<% f.text_field :sex ,:class => "col-xs-10 col-sm-5"%>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<%= f.label :organization, :class => "col-md-2 control-label pull-right" %>
+			<div class="col-md-8 pull-right">
+				<%= f.text_field :organization, :class => "form-control" %>
+			</div>
+		</div>
+
 		<div class="form-group ">
 			<div class="col-md-4 pull-left">
 				<%= content_tag :button, :type => :submit, :class => "btn btn-success",  :tabindex=>"5" do %>
