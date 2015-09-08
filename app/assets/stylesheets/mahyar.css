@@ -333,3 +333,12 @@ margin-left:2px;
 .form-horizontal .form-group {
 	font-family: 'koodak';
 }
+
+.carousel .item {
+    width: 100%; /*slider width*/
+    max-height: 700px; /*slider height*/
+}
+
+.carousel .item img {
+    width: 100%; /*img width*/
+}
