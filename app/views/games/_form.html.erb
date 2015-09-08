@@ -12,33 +12,18 @@
   <% end %>
 
   <div class="field">
-    <%= f.label :user_id %><br>
-    <%= f.number_field :user_id %>
+    <%= f.label :name %><br>
+    <%= f.text_field :name %>
   </div>
   <div class="field">
-    <%= f.label :level_id %><br>
-    <%= f.text_field :level_id %>
+    <%= f.label :description %><br>
+    <%= f.text_area :description %>
   </div>
   <div class="field">
-    <%= f.label :score %><br>
-    <%= f.number_field :score %>
+    <%= f.label :element %><br>
+    <%= f.text_field :element %>
   </div>
-  <div class="field">
-    <%= f.label :result %><br>
-    <%= f.number_field :result %>
-  </div>
-  <div class="field">
-    <%= f.label :user_solution %><br>
-    <%= f.text_area :user_solution %>
-  </div>
-  <div class="field">
-    <%= f.label :hop_count %><br>
-    <%= f.number_field :hop_count %>
-  </div>
-  <div class="field">
-    <%= f.label :line_of_code %><br>
-    <%= f.number_field :line_of_code %>
-  </div>
+
   <div class="actions">
     <%= f.submit %>
   </div>

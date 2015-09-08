@@ -4,8 +4,7 @@ class HomeController < ApplicationController
     render :layout => false
   end
 
-  def data
-    @data = File.read("#{Rails.root}/public/graph.json")
-    render :json => @data
+  def test
+   @level = Level.last
   end
 end

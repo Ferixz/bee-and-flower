@@ -1,0 +1,825 @@
+<script src="/assets/parser-mesh.js"></script>
+<div id="tipue_drop_fade"></div>
+<div id="container">
+<div class="grid grid-pad">
+    <div class="row-fluid profile">
+		<div class="col-xs-7 col-md-7 col-lg-7">
+			<div id="graph" class="profile-sidebar">
+
+			</div>
+			<hr class="colorgraph">
+		</div>
+		<div class="col-xs-5 col-md-5 col-lg-5">
+
+            <div id='content' class="profile-content ">
+			  <div class="page-header">
+			    <h4 class="text-center">برنامه ی خود را در ویرایشگر زیر بنویسید:</h4>
+
+			  </div>
+
+		        		<pre id="editor">تازمانیکه همسایه زرد است{
+							بروبه راست؛
+						}
+
+						</pre>
+						<div id="build-message" class="hidden"><i class='glyphicon glyphicon-repeat'></i></div>
+								<div class="profile-userbuttons">
+								<button id='reset' type="button" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-repeat"> </i> <%=t :reset%></button>
+								<button id='run' type="button" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-chevron-left"> </i>  <%=t :run%></button>
+
+
+
+								</div>
+           </div>
+<hr class="colorgraph">
+		</div>
+
+	</div>
+
+</div>
+<script>
+
+
+	var staticWordCompleter = {
+	    getCompletions: function(editor, session, pos, prefix, callback) {
+	        var wordList = [<% for c in Color.all%>'<%= c.fa_name%>',<%end%>'goto','if', 'while', 'current', 'neighbor', 'is', 'not', 'همسایه', 'فعلی', 'بروبه' ,'است', 'اگر', 'تازمانیکه'];
+	        callback(null, wordList.map(function(word) {
+	            return {
+	                caption: word,
+	                value: word,
+	                meta: "static"
+	            };
+	        }));
+
+	    }
+	}
+
+
+	var colors = {<% for c in Color.all%>'<%= c.fa_name%>':'#<%= c.hex%>',<%end%>}
+	var color_intensity = {<% for c in Color.all%>'<%= c.fa_name%>':'<%= c.intensity%>',<%end%>}
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/tomorrow_night_eighties");
+    editor.getSession().setMode("ace/mode/rasa");
+	editor.setOptions({
+	    enableLiveAutocompletion: true
+	});
+	editor.completers = [staticWordCompleter]
+	 editor.renderer.on('afterRender', function(e) {
+	      // $('.ace_identifier').css("background-color","lightBlue");
+		$('.ace_identifier').each(function(i, obj) {
+			var value = $(this).text()
+
+			var hex = colors[value]
+			var intensity = color_intensity[value]
+			if (typeof hex != undefined){
+			$(this).css("background-color", hex);
+			}
+			if (intensity == 'low'){
+			$(this).css("color", 'black');
+			}
+		});
+	    });
+
+		function resizeAce() {
+		  return $('#editor').width($('#content').width() - 22);
+		};
+		//listen for changes
+		$(window).resize(resizeAce);
+		//set initially
+		resizeAce();
+</script>
+<script>
+function buildErrorMessage(e) {
+	if (e.line !== undefined && e.column !== undefined){
+	 return " <%=t :error_in%> <%=t :line%> " + e.line + ", <%=t :column%> " + e.column;
+	}
+}
+</script>
+<script>
+function translate(phrase, lang){
+dict = {
+	'است':'is',
+	'نیست':'not',
+	'همسایه':'neighbor',
+	'فعلی':'current',
+	'گام جلوتر':'hops away',
+	<%for color in Color.all%>
+	'<%=color.fa_name%>':'<%= color.name%>',
+	<%end%>
+'بالا':'up',
+'پایین':'down',
+'راست':'right',
+'چپ':'left'
+}
+if (lang == 'fa'){
+	for (var i in dict) {
+		if ( dict[i] == phrase){
+			return i
+		}
+	}
+
+} else {
+for (var i in dict) {
+	if ( i == phrase){
+		return dict[i]
+	}
+}
+}
+
+}
+
+
+
+</script>
+<script>
+var width = 600,
+height = 600;
+
+var force = d3.layout.force()
+				.size([width, height])
+				.charge(-400)
+				.linkDistance(70)
+				.on("tick", tick)
+				.on("end", nodelist);
+
+var svg = d3.select("#graph").append("svg")
+			.attr("width", width)
+			.attr("height", height);
+
+var link = svg.selectAll(".link"),
+	node = svg.selectAll(".node");
+
+var graph = {
+	"nodes": [
+		<%= raw @level.nodes_list%>
+	],
+	"links": [
+		<% for i in 0..@level.number_of_nodes - 2 %>
+		<%if i % Math.sqrt(@level.number_of_nodes).ceil.to_i != Math.sqrt(@level.number_of_nodes).ceil.to_i - 1 %>
+		{'source':<%= i%>, 'target':<%= i+1%>},
+		<%end%>
+		<% if i < @level.number_of_nodes  - Math.sqrt(@level.number_of_nodes).ceil.to_i %>
+		{'source':<%= i%>, 'target':<%= i+ Math.sqrt(@level.number_of_nodes).ceil.to_i%>},
+		<%end%>
+		<%end%>
+		<% raw @level.links_list%>
+	]
+};
+	var flower_id = <%= @level.flower_id%>;
+	var nodes_temp = jQuery.extend(true, {}, graph.nodes);
+	var visited = [];
+	var visited_nodes = [];
+	var visited_links = [];
+	var infinite_iteration =  false;
+	var square_w = Math.ceil(Math.sqrt(graph.nodes.length))
+	var grid = gridPos(width, height, true, square_w, square_w);
+(function() {
+
+	force
+		.nodes(graph.nodes)
+		.links(graph.links)
+		.start();
+
+	link = link.data(graph.links)
+		.enter().append("line")
+		.style("stroke-dasharray", ("3, 3"))
+		.style("stroke", "#848482")
+		.attr("id", 'edge' )
+		;
+
+	node = node.data(graph.nodes)
+		.enter().append("g")
+		.attr("class", "node")
+
+	node.append("rect")
+	    .attr("id",function(d,i){return "circle" + i;} )
+		.attr("width", 16)
+		.attr("height", 16)
+		.attr('x', -8)
+		.attr('y', -8)
+		.style('stroke', '#848482')
+		.style('stroke-width', '0.3px')
+		.style("fill",function(d,i){return d.hex;});
+})();
+
+function nodelist() {
+	link.attr("id",  function(d) {return 'edge'+ d.source.x+d.source.y+d.target.x+d.target.y} );
+	$('#run').click(function(){
+	var points = []
+
+
+	try {
+		var output = parser.parse(editor.getSession().getValue());
+		$("#build-message").attr("class", "").text('');
+	} catch (e) {
+     $("#build-message").attr("class", "alert alert-danger").text(buildErrorMessage(e));
+
+  //    var result = false;
+    }
+	var result = $("#result").text(jsDump.parse(output));
+
+	var res = jQuery.parseJSON(jsDump.parse(output));
+	console.log(res)
+	//var current = node[0][0];
+	var current = link[0][0].__data__.source
+	points.push([current.x,current.y])
+	visited_nodes.push(current)
+	var command = []
+	var iterations = []
+	var condition_command = []
+	var dfs_track = false
+
+	clean_up_d3 ();
+
+
+	function process(key,value) {
+			//console.log(key + " : "+value);
+			switch (true) {
+				case value =='goto':
+					command.push('infinite_iteration = false;');
+					command.push('current=go_to(current,')
+					break;
+				case key =='direction':
+						command.push("'"+translate(value)+"');")
+					break;
+				case key =='other':
+					for(var i = 0; i < value.length; i++) {
+						command.push(",'" + translate(value[i].color) +"'")
+					}
+					command.push(']);')
+					break;
+				case value =='if'  || value =='اگر' :
+					condition_command = condition_command.slice(condition_command.length);
+					command.push('if (');
+					break;
+				case value =='while' || value =='تازمانیکه':
+				    condition_command = condition_command.slice(condition_command.length);
+					var iterator = randid(2)
+					iterations.push(iterator)
+					command.push('var ' +  iterator+ '=0;')
+					command.push('while (')
+					break;
+				case key == 'node':
+					var vl = translate(value)
+					condition_command.push(vl)
+					break;
+				case key == 'statement':
+					condition_command.push('(')
+					break;
+				case key == 'verb':
+					condition_command.push(translate(value))
+					break;
+				case key == 'color':
+						condition_command.push(translate(value))
+						var logic = 'extract_cond(current,'+"'"+condition_command[condition_command.length - 3]+"'"+','+"'"+ condition_command[condition_command.length - 2]+"'"+','+"'"+condition_command[condition_command.length - 1]+"'"+')'
+		  			condition_command.pop();condition_command.pop();condition_command.pop();
+						condition_command.push(logic)
+						break;
+				case key == 'op':
+					switch (true) {
+						case value == 'or':
+							condition_command.push('||')
+							break;
+						case value == 'and':
+							condition_command.push('&&')
+							break;
+						}
+					break;
+				case key == 'body':
+					var length = graph.nodes.length + 1
+					var iterator = iterations[iterations.length -1]
+					if (command[command.length - 1] == 'while ('){
+						command.push('(' + condition_command.join(" ") +') && '+ iterator +'< '+ length +'){' +iterator +'++;')
+						}
+					if (command[command.length - 1] == 'if ('){
+							command.push('(' + condition_command.join(" ")+')' +'){')
+							}
+						break;
+				}
+	}
+
+	function post_process(obj){
+		if (typeof obj.statement != 'undefined'){
+			condition_command.push(')')
+		}
+		if (typeof obj.tag != "undefined"){
+			switch (true) {
+			case obj.tag == 'while':
+				var length = graph.nodes.length -1;
+				var iterator = iterations[iterations.length -1]
+				command.push("if ("+ iterator +" >"+length+") {  transition(points);if(checkrep(visited)){infinite_iteration = true; throw new Error('Infinite Loop!');}}}");
+				iterations.pop();
+				break;
+			case obj.tag == 'if':
+				command.push("};");
+				break;
+			}
+		}
+	}
+
+	var pendingRecursive = 0;
+	function traverse(o,func) {
+	    for (var i in o) {
+	        func.apply(this,[i,o[i]]);
+	        if (o[i] !== null && typeof(o[i])=="object") {
+				pendingRecursive++;
+				//console.log(pendingRecursive);
+	            traverse(o[i],func);
+				//console.log(visited)
+				post_process(o[i]);
+				pendingRecursive--;
+	        }
+	    }
+		if (pendingRecursive == 0){
+		  command.push('transition(points);')
+		//console.log(condition_command.join(" "))
+		//console.log(eval(condition_command.join(" ")))
+
+	    console.log(command.join(" "))
+		eval(command.join(" "))
+	    }
+	}
+
+	traverse(res,process);
+
+	function extract_cond(current, cond_node , cond_verb, cond_color) {
+		//	console.log(current, cond_node , cond_verb, cond_color);
+			switch (true) {
+				case !isNaN(parseInt(cond_node)):
+					if (cond_verb == 'is'){
+						if (dfs(current,0, parseInt(cond_node), [], cond_color)){ return true}else{return false}
+					} else {
+						if (!dfs(current,0, parseInt(cond_node), [], cond_color)){return true}else{return false}
+					}
+					break;
+				case cond_node == 'current':
+					if (cond_verb == 'is'){
+						if (current.color == cond_color){ return true}else{return false}
+					} else {
+						if (current.color != cond_color){ console.log(current.index +' not current '+ cond_color); return true}else{return false}
+					}
+					break;
+				case cond_node == 'neighbor':
+					if ( cond_verb == 'is'){
+						if (neigbor_color(current,cond_color)){
+							console.log(current.index +' neighbor is '+ cond_color);
+							return true
+						}else{
+							console.log(current.index +'s neighbor not '+ cond_color);
+							return false
+						}
+					} else {
+						if (!neigbor_color(current,cond_color)){
+								console.log(current.index +' neighbor is '+ cond_color);
+								return true
+						}else{
+								console.log(current.index +'s neighbor not '+ cond_color);
+								return false}
+					}
+					break;
+			}
+		}
+
+
+
+
+		function dfs(current_node,current_depth, desired_depth, visited_dfs, color){
+			//console.log(current_node,current_depth, desired_depth)
+			if(current_depth == desired_depth) {
+				if (current_node.color == color){
+				}
+		    	return;
+		  	}
+			var n = neighbors(current_node)
+			for(var i = 0; i < n.length; i++) {
+				if (indexOf.call(visited_dfs, n[i].index) == -1){
+					visited_dfs.push(n[i].index);
+					dfs(n[i], current_depth + 1, desired_depth, visited_dfs, color);
+				}
+			}
+		}
+
+		function neighbors(current){
+			var neighbors = []
+			for(var i = 0; i < graph.links.length; i++) {
+				var source = link[0][i].__data__.source
+				var target = link[0][i].__data__.target
+				var current_index = current.index
+				if (source.index == current_index) {
+					neighbors.push(target);
+				}
+				if (target.index == current_index){
+					neighbors.push(source);
+				}
+				if (i == graph.links.length -1){return neighbors}
+			}
+		}
+
+		function neigbor_color(current, color){
+			//console.log(current.index, color)
+			var has = false
+			for(var i = 0; i < graph.links.length; i++) {
+			 	has = has || connected_and_color(i, current, color)[0]
+				if (i == graph.links.length -1){
+					if (has) { return has}else{return false}
+				}
+			}
+		}
+
+		function go_to(current, direction) {
+				console.log(current.index, direction)
+				for(var i = 0; i < graph.links.length; i++) {
+					//console.log(connected_w_direction(i, current, direction));
+					if (connected_w_direction(i, current, direction)[0]) {
+						console.log(connected_w_direction(i, current, direction)[1]);
+						var target = connected_w_direction(i, current, direction)[1]
+						points.push([target.x,target.y])
+						current.color = 'grey'
+						current.hex = '#848482'
+						console.log('going to '+ target.index );
+						visited.push(target.index);
+						visited_nodes.push(target);
+						visited_links.push(i);
+						console.log(link[0][i].__data__)
+						return target
+					}
+			}
+			//console.log(points);
+			transition(points);
+		}
+
+		function connected_w_direction(index, current, direction) {
+			var source = link[0][index].__data__.source
+			var target = link[0][index].__data__.target
+			var current_index = current.index
+			var source_based = relativePos(source,target);
+			var target_based = relativePos(target,source);
+			var valid = 0
+			if (source.index == current_index && source_based.indexOf(direction) > -1 ) {
+				next_hop = target;
+				valid = 1;
+			}
+			if (target.index == current_index  && target_based.indexOf(direction) > -1 ){
+				next_hop = source;
+				valid = 1;
+			}
+			if (valid == 1){return [true, next_hop]} else { return [false, false]}
+		}
+	function relativePos(source, target){
+		var pos = []
+		switch (true){
+			case target.px < source.px && target.py > source.py:
+				pos = ['left', 'down'];
+				break;
+			case target.px > source.px && target.py > source.py:
+				pos = ['right', 'down'];
+				break;
+			case target.px < source.px && target.py < source.py:
+				pos = ['left', 'up'];
+				break;
+			case target.px > source.px && target.py < source.py:
+				pos = ['right', 'up'];
+				break;
+			case target.px == source.px && target.py < source.py:
+				pos = ['same','up'];
+				break;
+			case target.px == source.px && target.py > source.py:
+				pos = ['same','down'];
+				break;
+			case target.px > source.px && target.py == source.py:
+				pos = ['right','same'];
+				break;
+			case target.px < source.px && target.py == source.py:
+				pos = ['left','same'];
+				break;
+		}
+			//console.log(pos);
+			return pos;
+	}
+	function connected_and_color(index, current, color) {
+		//console.log(current)
+		var source = link[0][index].__data__.source
+		var target = link[0][index].__data__.target
+		var current_index = current.index
+		var valid = 0
+		if (source.index == current_index && target.color == color) {
+			next_hop = target;
+			valid = 1;
+		}
+		if (target.index == current_index  && source.color == color){
+			next_hop = source;
+			valid = 1;
+		}
+		if (valid == 1){return [true, next_hop]} else { return [false, false]}
+	}
+	});
+
+	var flower = svg.append("svg:image")
+	    .attr("id","carrot")
+		.attr('x',node[0][flower_id].__data__.x -25)
+		.attr('y',node[0][flower_id].__data__.y-45)
+		.attr('width', 50)
+		.attr('height', 50)
+		.attr("xlink:href","/assets/carrot.png")
+
+		var unique = {};
+		var distinct = [];
+		for( var i in graph.nodes ){
+		 if( typeof(unique[graph.nodes[i].hex]) == "undefined"){
+		  distinct.push([graph.nodes[i].hex, graph.nodes[i].color]);
+		 }
+		 unique[graph.nodes[i].hex] = 0;
+		}
+
+	for (i in distinct){
+		var cr_y = i*25 + 10
+		var tx_y = i*25 + 15
+	 	svg.append("rect")
+			.attr("width", 12)
+			.attr("height", 12)
+			.attr('x', -6)
+			.attr('y', -6)
+			.style('stroke', '#848482')
+			.style('stroke-width', '0.1px')
+			.style("fill", distinct[i][0])
+			.attr("class", "cr")
+			.attr("transform", "translate(" + 15 + "," + cr_y + ")");
+
+		svg.append("text")
+			.text(translate(distinct[i][1], 'fa'))
+			.attr("class", "lb")
+			.attr("transform", "translate(" + 27 + "," + tx_y + ")");
+	}
+
+	bee = add_bee();
+	function add_bee(){
+		var x = node[0][0].__data__.x
+		var y = node[0][0].__data__.y
+	var bee = svg.append("svg:image")
+		.attr("id","rabbit")
+		.attr('x',-36)
+		.attr('y',-78)
+		.attr("transform", "translate(" + x + "," + y + ")")
+		.attr('width', 72)
+		.attr('height', 72)
+		.attr("xlink:href","/assets/rabbit-wo-carrot1.png");
+	return bee;
+	}
+
+		function aftermath(){
+			revert_colored(visited);
+			var node = find_node_by_id(visited[visited.length - 1])
+			switch (true){
+				case flower_id == visited[visited.length - 1]:
+					flower.style("opacity", 0)
+					rabbit_reaction(node, 20, 170,15,125 ,'آخ جون', 'rabbit-w-carrot1')
+					return true
+					break;
+				case infinite_iteration == true:
+					rabbit_reaction(node,2, 105,15,65,'افتادم تو چرخه','sad-rabbit1')
+					break;
+				case flower_id != visited[visited.length - 1] && visited.length != 0:
+					rabbit_reaction(node,20, 170,10,125,'هویج من کو؟', 'sad-rabbit1')
+					break;
+				case visited.length == 0:
+
+					rabbit_reaction(link[0][0].__data__.source,2, 105,15,65,'اینطوری نمیتونم برم', 'sad-rabbit1')
+					break;
+				}
+			}
+
+		function rabbit_reaction(node, cm_x, cm_y, t_x, t_y ,text, rabbit){
+			if (rabbit != ''){
+				d3.select("#rabbit").style("opacity", 0);
+				var angry = svg.append("svg:image")
+							   .attr("id", rabbit)
+							   .attr('x',-36)
+							   .attr('y',-78)
+						       .attr("transform", "translate(" + node.x + "," + node.y + ")")
+							   .attr('width', 72)
+			                   .attr('height', 72)
+							   .attr("xlink:href","/assets/"+rabbit+".png");
+
+			}
+			var trap_x = node.x -cm_x
+			var trap_y = node.y -cm_y
+		    var angry = svg.append("svg:image")
+							.attr("id","trapped")
+							.attr('x',0)
+							.attr('y',0)
+							.attr("transform", "translate(" + trap_x + "," + trap_y + ")")
+							.attr('width', 120)
+					        .attr('height',120)
+							.attr("xlink:href","/assets/comment.png");
+			var text_x = node.x +t_x
+			var text_y = node.y -t_y
+				svg.append("text")
+				   .attr("id","trappedtext")
+				   .text(text)
+				   .attr("class", "cm")
+				   .attr("transform", "translate(" + text_x + "," + text_y + ")");
+
+		}
+		function find_node_by_id(id){
+			for(var i = 0; i < graph.nodes.length; i++) {
+				if(node[0][i].__data__.index == id){
+					return node[0][i].__data__;
+				}
+			}
+
+		}
+
+
+		function revert_colored(visited){
+			for(var i = 0; i < graph.nodes.length; i++) {
+				node[0][i].__data__.color = nodes_temp[i].color
+				node[0][i].__data__.hex = nodes_temp[i].hex
+				//console.log(node[0][i].__data__.color, nodes_temp[i].color);
+			}
+		}
+
+		function transition(points) {
+		//	console.log(points);
+			var path = svg.append("path")
+				.data([points])
+				.attr("d", d3.svg.line()
+				.tension(1)
+				.interpolate("monotone"));
+
+			bee.transition()
+				.duration(4000)
+				.attrTween("transform", translateAlong(path.node()))
+				.each("end", aftermath);
+		}
+
+		function translateAlong(path) {
+		  var l = path.getTotalLength();
+		  return function(d, i, a) {
+		    return function(t) {
+		      var p = path.getPointAtLength(t * l);
+			  for(v in visited_nodes){
+				if (v > 0){
+					if ((Math.abs(visited_nodes[v].px  - p.x) < 20) &&(Math.abs(visited_nodes[v].py  - p.y) < 20)){
+		       var edge  = d3.select("#edge"+visited_nodes[v-1].x+visited_nodes[v-1].y+visited_nodes[v].x+visited_nodes[v].y);
+				       var edge1  = d3.select("#edge"+visited_nodes[v].x+visited_nodes[v].y+visited_nodes[v-1].x+visited_nodes[v-1].y);
+					edge.style("stroke-dasharray", "").style("stroke", "black");
+					edge1.style("stroke-dasharray", "").style("stroke", "black");
+						}
+					}
+				}
+		      return "translate(" + p.x + "," + p.y + ")";
+		    };
+		  };
+		}
+
+}
+
+
+	$('#reset').click(function(){
+	clean_up_d3 ();
+
+	})
+
+ function clean_up_d3 (){
+	d3.select("#rabbit").style("opacity", 1);
+	d3.select("#rabbit-w-carrot1").remove();
+	d3.select("#bee-angry").remove();
+	d3.select("#sad-rabbit1").remove();
+	d3.select("#trapped").remove();
+	d3.select("#trappedtext").remove();
+	d3.select("#trappedtext1").remove();
+	link.style("stroke-dasharray", ("3, 3")).style("stroke", "#848482");
+	d3.select("#rabbit").attr("transform", "translate(" + node[0][0].__data__.x + "," + node[0][0].__data__.y + ")");
+	d3.select("#carrot").style("opacity", 1);
+	for(var i = 0; i < graph.nodes.length; i++) {
+		d3.select("#circle" + i).style("fill", node[0][i].__data__.hex);
+	}
+}
+
+
+function tick() {
+	link.attr("x1", function(d) { return d.source.x; })
+		.attr("y1", function(d) { return d.source.y; })
+		.attr("x2", function(d) { return d.target.x; })
+		.attr("y2", function(d) { return d.target.y; });
+
+	node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+}
+
+
+node.each(function(d) {
+	d.fixed = true;
+	var width = Math.ceil(Math.sqrt(graph.nodes.length))
+//	var grid = randomData(600, 600, true, width, width)
+	var row = Math.floor(d.index / width)
+	var index = d.index % width
+	d.px = grid[row][index].x
+	d.py = grid[row][index].y
+});
+
+function dblclick(d) {
+	d3.select(this).classed("fixed", d.fixed = false);
+}
+
+function dragstart(d) {
+	d3.select(this).classed("fixed", d.fixed = true);
+}
+
+function gridPos(gridWidth, gridHeight, square, noCol, noRow)
+{
+    var data = new Array();
+    var gridItemWidth = gridWidth / noCol;
+    var gridItemHeight = (square) ? gridItemWidth : gridHeight / noRow;
+    var startX = gridItemWidth ;
+    var startY = gridItemHeight*1.4 ;
+    var stepX = gridItemWidth /1.5;
+    var stepY = gridItemHeight/1.5;
+    var xpos = startX;
+    var ypos = startY;
+    var newValue = 0;
+    var count = 0;
+
+    for (var index_a = 0; index_a < noRow; index_a++)
+    {
+        data.push(new Array());
+        for (var index_b = 0; index_b < noCol; index_b++)
+        {
+            newValue = Math.round(Math.random() * (100 - 1) + 1);
+            data[index_a].push({
+                                time: index_b,
+                                value: newValue,
+                                width: gridItemWidth,
+                                height: gridItemHeight,
+                                x: xpos,
+                                y: ypos,
+                                count: count
+                            });
+            xpos += stepX;
+            count += 1;
+        }
+        xpos = startX;
+        ypos += stepY;
+    }
+    return data;
+}
+
+	</script>
+
+<div id="chart"></div>
+
+<script type="text/javascript">
+	function calendarWeekHour(id, width, height, square)
+	{
+	    var calData = randomData(width, height, square);
+	    //console.log(calData);
+	    var grid = d3.select(id).append("svg")
+	                    .attr("width", width)
+	                    .attr("height", height)
+	                    .attr("class", "chart");
+
+	    var row = grid.selectAll(".row")
+	                  .data(calData)
+	                  .enter().append("svg:g")
+	                  .attr("class", "row");
+
+	    var col = row.selectAll(".cell")
+	                 .data(function (d) {return d; })
+	                 .enter().append("svg:circle")
+	                 .attr("class", "cell")
+	                 .attr("cx", function(d) { return d.x; })
+	                 .attr("cy", function(d) { return d.y; })
+	                 .attr("r", 10)
+	                 .style("fill", '#FFF')
+	                 .style("stroke", '#555');
+
+		var col = row.selectAll(".edge")
+				     .data(function (d) {console.log(d); return d; })
+				     .enter().append("svg:line")
+				     .attr("class", "edge")
+				     .style("stroke", "gray") // <<<<< Add a color
+					 .attr("x1", function(d) { return d.x })
+					 .attr("y1", function(d) { return d.y })
+					 .attr("x2", function(d) { return d })
+					 .attr("y2", function(d) {  return d})
+					 .attr("id",function(d,i){return "edg" + i;} )
+	}
+
+	////////////////////////////////////////////////////////////////////////
+
+	/**
+	*   randomData()        returns an array: [
+	                                            [{id:value, ...}],
+	                                            [{id:value, ...}],
+	                                            [...],...,
+	                                            ];
+	                        ~ [
+	                            [hour1, hour2, hour3, ...],
+	                            [hour1, hour2, hour3, ...]
+	                          ]
+
+	*/
+
+
+    //calendarWeekHour('#chart', 900, 400, true);
+</script>

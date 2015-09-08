@@ -19,12 +19,21 @@
 	<meta name="msapplication-TileImage" content="/assets/ms-icon-144x144.png">
 	<meta name="theme-color" content="#ffffff">
   <title>Rassa.io</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= stylesheet_link_tag    'application', media: 'all' %>
 <%= javascript_include_tag 'application'%>
   <%= csrf_meta_tags %>
+<script>
+function scrollToElement(ele) {
+    $(window).scrollTop(ele.offset().top).scrollLeft(ele.offset().left);
+}
+$(document).ready(function(){
+scrollToElement($('#nav'))
+});
+</script>
 </head>
 <body>
 <%= render "layouts/header"%>
+<a name="about"></a>
 <div id='container' class="container">
 <%= yield %>
 

@@ -15,7 +15,15 @@ select,
 textarea,
 p, h3,h4,
 .navbar-search .search-query {
+	-webkit-transform: translateZ(0.00001px);
 	font-family: 'koodak' ;
+}
+
+.navbar{
+	-webkit-transform: translateZ(0.00001px);
+	 -webkit-transform:scale(1);
+	zoom: 1;
+
 }
 
 .alert {
@@ -26,6 +34,7 @@ p, h3,h4,
     background-color:#666;
     color:#ffffff;
     border-radius:0;
+
 }
 
 .navbar-custom .navbar-nav > li > a {
@@ -292,7 +301,15 @@ hr {
 	  font-size:4.8em;
 	  text-align:center;
       height:200px;
-      background-image: url('/assets/beefl.png');
+
+}
+
+.bee {
+background-image: url('/assets/beefl.png');
+}
+
+.bunny {
+background-image: url('/assets/bunnyfl.png');
 }
 
 .imageContainer:hover {

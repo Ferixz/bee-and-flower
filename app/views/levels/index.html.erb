@@ -1,18 +1,19 @@
+
 <div class="container">
 	<div class="page-header">
-		<h1 class="text-center">زنبور بلا</h1>
+		<h1 class="text-center"><%= @game.name %></h1>
 	</div>
-	<p class="lead text-center">در هر بازی باید برنامه ای بنویسید تا زنبور را به گل برساند</p>
+	<p class="lead text-center"><%= @game.description %></p>
 	<div class="container">
 		<%@i=1%>
-		<% for level in Level.all%>
+		<% for level in @levels%>
 
 		<%if @i%3 == 1 %>
 		<div class="row stylish-panel">
   	   <%end%>
 			<div class="col-md-4 pull-right">
 				<div>
-					<div class="imageContainer img-circle img-thumbnail"><%= level.name%></div>
+					<div class="imageContainer img-circle img-thumbnail <%= @game.element%>"><%= level.name%></div>
 
 					<h2></h2>
 					<p>

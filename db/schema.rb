@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150902075139) do
+ActiveRecord::Schema.define(version: 20150908062542) do
 
   create_table "colors", force: :cascade do |t|
     t.string   "name"
@@ -24,15 +24,11 @@ ActiveRecord::Schema.define(version: 20150902075139) do
   end
 
   create_table "games", force: :cascade do |t|
-    t.integer  "user_id"
-    t.integer  "level_id"
-    t.integer  "score"
-    t.integer  "result"
-    t.text     "user_solution"
-    t.integer  "hop_count"
-    t.integer  "line_of_code"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.string   "name"
+    t.text     "description"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.string   "element"
   end
 
   create_table "levels", force: :cascade do |t|
@@ -43,6 +39,7 @@ ActiveRecord::Schema.define(version: 20150902075139) do
     t.datetime "updated_at",      null: false
     t.string   "name"
     t.integer  "flower_id"
+    t.integer  "game_id"
   end
 
 # Could not dump table "profiles" because of following NoMethodError

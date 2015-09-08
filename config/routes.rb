@@ -1,14 +1,14 @@
 Rails.application.routes.draw do
-  resources :levels
-
   resources :games
+
+  resources :levels
 
   resources :profiles
 
   devise_for :users
   resources :colors
 
-  get 'home/data' => 'home#data'
+  get 'home/test' => 'home#test'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

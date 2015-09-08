@@ -4,7 +4,8 @@ class LevelsController < ApplicationController
   # GET /levels
   # GET /levels.json
   def index
-    @levels = Level.all
+    @levels = Level.where(:game_id => params[:game_id])
+    @game = Game.find(params[:game_id])
   end
 
   # GET /levels/1
@@ -69,6 +70,6 @@ class LevelsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def level_params
-      params.require(:level).permit(:nodes_list, :links_list, :number_of_nodes, :name, :flower_id)
+      params.require(:level).permit(:nodes_list, :links_list, :number_of_nodes, :name, :flower_id, :game_id)
     end
 end

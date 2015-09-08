@@ -1,38 +1,13 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <strong>User:</strong>
-  <%= @game.user_id %>
+  <strong>Name:</strong>
+  <%= @game.name %>
 </p>
 
 <p>
-  <strong>Level:</strong>
-  <%= @game.level_id %>
-</p>
-
-<p>
-  <strong>Score:</strong>
-  <%= @game.score %>
-</p>
-
-<p>
-  <strong>Result:</strong>
-  <%= @game.result %>
-</p>
-
-<p>
-  <strong>User solution:</strong>
-  <%= @game.user_solution %>
-</p>
-
-<p>
-  <strong>Hop count:</strong>
-  <%= @game.hop_count %>
-</p>
-
-<p>
-  <strong>Line of code:</strong>
-  <%= @game.line_of_code %>
+  <strong>Description:</strong>
+  <%= @game.description %>
 </p>
 
 <%= link_to 'Edit', edit_game_path(@game) %> |

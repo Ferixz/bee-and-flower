@@ -44,9 +44,11 @@ circle {
   stroke-width: 1px;
 }
 
+
+
 .node circle {
   cursor: move;
-  stroke: #000;
+stroke:#848482;
   stroke-width: 0.5px;
 }
 
