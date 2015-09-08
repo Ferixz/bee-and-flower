@@ -33,4 +33,12 @@ class ApplicationController < ActionController::Base
       new_profile_path
     end
   end
+
+  def admin?
+    if current_user.role_id == 11
+      return true
+    else
+      return false
+    end
+  end
 end

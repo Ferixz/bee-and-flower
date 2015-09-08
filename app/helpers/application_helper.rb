@@ -19,4 +19,12 @@ module ApplicationHelper
     ]
     return @options
   end
+
+  def admin?
+    if current_user.role_id == 11
+      return true
+    else
+      return false
+    end
+  end
 end
