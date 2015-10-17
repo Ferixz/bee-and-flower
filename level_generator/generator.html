@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+	<head>
+		<link rel="stylesheet" href="dependencies/generator.css">
+		<link rel="stylesheet" href="dependencies/graph.css">
+		<link rel="stylesheet" href="dependencies/d3/menu/css/d3-context-menu.css">
+	</head>
+
+	<body>
+		<div class="row">
+			<div class="col-12">
+				<p1>
+					Click in the open space to <strong>add a node</strong>
+					, drag from one node to another to <strong>add an edge</strong>. <br>
+					Ctrl-drag a node to <strong>move</strong> the graph layout. <br>
+					Click a node or an edge to <strong>select</strong> it.
+				</p1>
+				<br/>
+				<div id="graph_container"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<p1>node list</p1>
+				<div class="editableTextArea" id="node_list">
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<p1>edge list</p1>
+				<div class="editableTextArea" id="edge_list">
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<p1> num of vertices: </p1>
+				<br/>
+				<div class="editableTextArea" id="size_indicator"> undefined </div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<p1> flower: </p1>
+				<br/>
+				<div class="editableTextArea" id="flower_pos_indicator"> undefined </div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-4"></div>
+			<div class="col-4">
+				<button onclick="calculateOutput()">
+					calculate output
+				</button>
+			</div>
+			<div class="col-4"></div>
+		</div>
+
+		<script src="dependencies/d3/d3.js" charset="utf-8"></script>
+		<script src="dependencies/d3/menu/js/d3-context-menu.js" charset="utf-8"></script>
+		<script src="dependencies/rasa_specific.js" charset="utf-8"></script>
+		<script src="dependencies/graph_editor.js" charset="utf-8"></script>
+	</body>
+
+</html>
