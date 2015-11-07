@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150908083111) do
+ActiveRecord::Schema.define(version: 20151107140700) do
 
   create_table "colors", force: :cascade do |t|
     t.string   "name"
@@ -40,10 +40,21 @@ ActiveRecord::Schema.define(version: 20150908083111) do
     t.string   "name"
     t.integer  "flower_id"
     t.integer  "game_id"
+    t.integer  "level_index"
   end
 
 # Could not dump table "profiles" because of following NoMethodError
 #   undefined method `[]' for nil:NilClass
+
+  create_table "solutions", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "game_id"
+    t.integer  "level_id"
+    t.string   "result"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text     "sol"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false

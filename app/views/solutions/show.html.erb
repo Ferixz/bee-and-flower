@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>User:</strong>
+  <%= @solution.user_id %>
+</p>
+
+<p>
+  <strong>Game:</strong>
+  <%= @solution.game_id %>
+</p>
+
+<p>
+  <strong>Level:</strong>
+  <%= @solution.level_id %>
+</p>
+
+<p>
+  <strong>Result:</strong>
+  <%= @solution.result %>
+</p>
+
+<%= link_to 'Edit', edit_solution_path(@solution) %> |
+<%= link_to 'Back', solutions_path %>

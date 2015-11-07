@@ -1,7 +1,7 @@
 <% if @level.game_id == 1%>
-	<%= render :partial => 'bee'%>
+	<%= render :partial => 'bee', :object => [@next, @prev]%>
 <%end%>
 
 <% if @level.game_id == 2%>
-	<%= render :partial => 'bunny'%>
+	<% render :partial => 'bunny'%>
 <%end%>

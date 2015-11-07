@@ -216,6 +216,8 @@ fa:
         setting:
             user_privacy_status: 'نوع پروفایل'
             user_serachable_status: 'قابلیت جستجوی پروفایل'
+  next_game: 'بازی بعد'
+  prev_game: 'بازی قبل'
   home: 'خانه'
   submit: 'ثبت'
   cancel: 'ابطال'

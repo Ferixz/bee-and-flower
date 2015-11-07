@@ -1,6 +1,19 @@
 <script src="/assets/parser.js"></script>
 <div id="tipue_drop_fade"></div>
 <div id="container">
+	<ol id="pagination">
+		<% for level in Level.where(:game_id => @level.game_id).order('level_index DESC')%>
+		<% @solved = Solution.where(:user_id=> current_user.id, :level_id => level.id, :result => 'achieved')%>
+		<%@class = '' %>
+		<%case%>
+		<% when @solved.blank? && @level.id != level.id%>
+		<% @class = 'npassed' %>
+		<%when @level.id == level.id%>
+		<% @class = 'active' %>
+		<%end%>
+		<li><%= link_to level.id, level, :class => @class%></li>
+		<%end%>
+	</ol>
 <div class="grid grid-pad">
     <div class="row-fluid profile">
 		<div class="col-xs-7 col-md-7 col-lg-7">
@@ -23,12 +36,21 @@
 						</pre>
 						<div id="build-message" class="hidden"><i class='glyphicon glyphicon-repeat'></i></div>
 								<div class="profile-userbuttons">
+									<% if @prev.level_index != @level.level_index %>
+									<%= link_to level_path(@prev.id), :class => "btn btn-info btn-sm" do %>
+									<i class="glyphicon glyphicon-arrow-right"> </i>
+									<%=t :prev_game%>
+									<% end %>
+									<%end%>
 								<button id='reset' type="button" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-repeat"> </i> <%=t :reset%></button>
 								<button id='run' type="button" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-chevron-left"> </i>  <%=t :run%></button>
-
-
-
-								</div>
+								<% if @next.level_index != @level.level_index %>
+								<%= link_to level_path(@next.id), :class => "btn btn-info btn-sm" do %>
+									<%=t :next_game%>
+									<i class="glyphicon glyphicon-arrow-left"> </i>
+								<% end %>
+								<%end%>
+							</div>
            </div>
 <hr class="colorgraph">
 		</div>
@@ -135,8 +157,10 @@ var force = d3.layout.force()
 				.on("end", nodelist);
 
 var svg = d3.select("#graph").append("svg")
-			.attr("width", width)
-			.attr("height", height);
+			//.attr("width", width)
+			//.attr("height", height)
+			.attr("viewBox", "0 0 " + width + " " + height )
+			.attr("preserveAspectRatio", "xMidYMid meet");;
 
 var link = svg.selectAll(".link"),
 	node = svg.selectAll(".node");
@@ -480,21 +504,26 @@ function nodelist() {
 		function aftermath(){
 			revert_colored(visited);
 			var node = find_node_by_id(visited[visited.length - 1])
+			var solution = editor.getSession().getValue();
 			switch (true){
 				case flower_id == visited[visited.length - 1]:
 					flower.style("opacity", 0.5)
 					bee_reaction(node, 2, 105, 37, 65 ,'آخ جون', '')
+					post_solution(solution, 'achieved');
 					return true
 					break;
 				case infinite_iteration == true:
 					bee_reaction(node,2, 105,15,65,'افتادم تو چرخه','bee-angry')
+					post_solution(solution, 'infinite-loop');
 					break;
 				case flower_id != visited[visited.length - 1] && visited.length != 0:
 					bee_reaction(node,2, 105,15,65,'من که گلی نمی بینم', 'bee-cry')
+					post_solution(solution, 'not-achieved');
 					break;
 				case visited.length == 0:
 
 					bee_reaction(link[0][0].__data__.source,2, 105,15,65,'اینطوری نمیتونم برم', 'bee-cry')
+					post_solution(solution, 'not-moved');
 					break;
 				}
 			}
@@ -586,6 +615,7 @@ function nodelist() {
 	})
 
  function clean_up_d3 (){
+	d3.select("#flower").style("opacity", 1)
 	d3.select("#bee-holder").remove();
 	d3.select("#bee-angry").remove();
 	d3.select("#bee-cry").remove();
@@ -617,6 +647,20 @@ function dragstart(d) {
 	d3.select(this).classed("fixed", d.fixed = true);
 }
 
+function post_solution(sol, result) {
+	$.ajax({
+	    url: "/solutions",
+	    type: "POST",
+	    data: {'solution': {
+	             user_id: <%= current_user.id%>,
+	             game_id: <%= @level.game_id%>,
+				 level_id: <%= @level.id%>,
+				 result: result,
+				 sol:sol
+	}},
+	    success: function(resp){console.log(resp);}
+	});
+}
 
 
 	</script>

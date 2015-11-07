@@ -10,6 +10,20 @@ class LevelsController < ApplicationController
   # GET /levels/1
   # GET /levels/1.json
   def show
+     @level = Level.find(params[:id])
+     case
+      when @level.id == Level.first.id
+        @next_index = @level.level_index.to_i + 1
+        @prev_index = @level.level_index.to_i
+      when @level.id == Level.last.id
+        @next_index = @level.level_index.to_i
+        @prev_index = @level.level_index.to_i - 1
+      when @level.id != Level.first.id && @level.id != Level.first.id
+        @next_index = @level.level_index.to_i + 1
+        @prev_index = @level.level_index.to_i - 1
+      end
+     @next = Level.find_by_level_index(@next_index)
+     @prev = Level.find_by_level_index(@prev_index)
   end
 
   # GET /levels/new
@@ -75,6 +89,6 @@ class LevelsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def level_params
-    params.require(:level).permit(:nodes_list, :links_list, :number_of_nodes, :name, :flower_id, :game_id)
+    params.require(:level).permit(:nodes_list, :links_list, :number_of_nodes, :name, :flower_id, :game_id, :level_index)
   end
 end
