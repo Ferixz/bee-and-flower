@@ -38,16 +38,16 @@
 								<div class="profile-userbuttons">
 									<% if @prev.level_index != @level.level_index %>
 									<%= link_to level_path(@prev.id), :class => "btn btn-info btn-sm" do %>
-									<i class="glyphicon glyphicon-arrow-right"> </i>
+									<i class="glyphicon glyphicon-forward"> </i>
 									<%=t :prev_game%>
 									<% end %>
 									<%end%>
 								<button id='reset' type="button" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-repeat"> </i> <%=t :reset%></button>
-								<button id='run' type="button" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-chevron-left"> </i>  <%=t :run%></button>
+								<button id='run' type="button" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-send"> </i>  <%=t :run%></button>
 								<% if @next.level_index != @level.level_index %>
 								<%= link_to level_path(@next.id), :class => "btn btn-info btn-sm" do %>
 									<%=t :next_game%>
-									<i class="glyphicon glyphicon-arrow-left"> </i>
+									<i class="glyphicon glyphicon-backward"> </i>
 								<% end %>
 								<%end%>
 							</div>
