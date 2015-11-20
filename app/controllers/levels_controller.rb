@@ -11,14 +11,16 @@ class LevelsController < ApplicationController
   # GET /levels/1.json
   def show
      @level = Level.find(params[:id])
+     @first = Level.where(:game_id => @level.game_id).first
+     @last = Level.where(:game_id => @level.game_id).last
      case
-      when @level.id == Level.first.id
+      when @level.id == @first.id
         @next_index = @level.level_index.to_i + 1
         @prev_index = @level.level_index.to_i
-      when @level.id == Level.last.id
+      when @level.id == @last.id
         @next_index = @level.level_index.to_i
         @prev_index = @level.level_index.to_i - 1
-      when @level.id != Level.first.id && @level.id != Level.first.id
+      when @level.id != @first.id && @level.id != @first.id
         @next_index = @level.level_index.to_i + 1
         @prev_index = @level.level_index.to_i - 1
       end

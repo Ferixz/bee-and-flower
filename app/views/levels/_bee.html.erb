@@ -2,7 +2,7 @@
 <div id="tipue_drop_fade"></div>
 <div id="container">
 	<ol id="pagination">
-		<% for level in Level.where(:game_id => @level.game_id).order('level_index DESC')%>
+		<% for level in Level.where(:game_id => @level.game_id).order('level_index ASC')%>
 		<% @solved = Solution.where(:user_id=> current_user.id, :level_id => level.id, :result => 'achieved')%>
 		<%@class = '' %>
 		<%case%>
@@ -30,10 +30,7 @@
 
 			  </div>
 
-		        		<pre id="editor">تازمانیکه همسایه یاسی است{
-	بروبه یاسی؛
-}
-						</pre>
+		        		<pre id="editor"></pre>
 						<div id="build-message" class="hidden"><i class='glyphicon glyphicon-repeat'></i></div>
 								<div class="profile-userbuttons">
 									<% if @prev.level_index != @level.level_index %>
@@ -59,7 +56,31 @@
 
 </div>
 <script>
+var opts = {
+  lines: 13 // The number of lines to draw
+, length: 28 // The length of each line
+, width: 14 // The line thickness
+, radius: 54 // The radius of the inner circle
+, scale: 1 // Scales overall size of the spinner
+, corners: 1 // Corner roundness (0..1)
+, color: '#000' // #rgb or #rrggbb or array of colors
+, opacity: 0.25 // Opacity of the lines
+, rotate: 0 // The rotation offset
+, direction: 1 // 1: clockwise, -1: counterclockwise
+, speed: 1 // Rounds per second
+, trail: 60 // Afterglow percentage
+, fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+, zIndex: 2e9 // The z-index (defaults to 2000000000)
+, className: 'spinner' // The CSS class to assign to the spinner
+, top: '50%' // Top position relative to parent
+, left: '60%' // Left position relative to parent
+, shadow: false // Whether to render a shadow
+, hwaccel: false // Whether to use hardware acceleration
+, position: 'absolute' // Element positioning
+}
 
+var target = document.getElementById('graph')
+var spinner = new Spinner(opts).spin(target);
 
 	var staticWordCompleter = {
 	    getCompletions: function(editor, session, pos, prefix, callback) {
@@ -151,9 +172,13 @@ height = 600;
 
 var force = d3.layout.force()
 				.size([width, height])
-				.charge(-400)
-				.linkDistance(100)
-				//.friction(0.01)
+				//.charge(-1000)
+				//.linkDistance(10)
+				//.friction(0.001)
+				.charge(-1000)
+				.gravity(.01)
+				.friction(.2)
+				.linkStrength(9)
 				.on("tick", tick)
 				.on("end", nodelist);
 
@@ -185,8 +210,8 @@ var graph = {
 		.links(graph.links)
 		.start();
 
-	var drag = force.drag()
-		.on("dragstart", dragstart);
+	//var drag = force.drag()
+	//	.on("dragstart", dragstart);
 
 	link = link.data(graph.links)
 		.enter()
@@ -200,27 +225,59 @@ var graph = {
 	node.append("circle")
 	    .attr("id",function(d,i){return "circle" + i;} )
 		.attr("r", 10)
-		.call(drag)
+		//.call(drag)
 		.style("fill",function(d,i){return d.hex;});
 
 })();
 
 function nodelist() {
+	spinner.stop();
+/*
 	var str = ''
 	for(i in graph.nodes){
+		var index = graph.nodes[i].index
+		var hex = graph.nodes[i].hex
+		var color = graph.nodes[i].color
+		var x = graph.nodes[i].x
+		var y = graph.nodes[i].y
+		switch(true){
+			case color == 'grey':
+				color = 'white'
+				hex = 'ffffff'
+				break;
+			case color == 'violet':
+				color = 'violet'
+				hex = '5D3B8C'
+				break;
+			case color == 'purplish_pink':
+				color = 'purplish_pink'
+				hex = 'C702B0'
+				break;
+			case color == 'yellowish_pink':
+				 color = 'yellowish_pink'
+				 hex = 'FF7EB2'
+				 break;
+			case color == 'green':
+				color = 'green'
+				hex = '22BF22'
+				break;
+			case index == 0:
+				color = 'grey'
+				hex = '848482'
+				break;
 
+		}
 		//{"label": "1", 'color': 'grey', 'hex':'#848482'},
 
-		 str = str + " {" + '"label":' + '"'+ graph.nodes[i].index +'"' + "," + ' "color": '+ '"' + graph.nodes[i].color + '"' + "," + '"hex":'+ '"' + graph.nodes[i].hex + '"' + "," + '"lx":'  +'"' + graph.nodes[i].x  +'"' + "," +  '"ly":'  +'"' + graph.nodes[i].y  +'"'+'} ,';
+		 str = str + " {" + '"label":' + '"'+ index +'"' + "," + ' "color": '+ '"' + color + '"' + "," + '"hex":'+ '"' + hex + '"' + "," + '"lx":'  +'"' + x  +'"' + "," +  '"ly":'  +'"' + y  +'"'+'} ,';
+
 		if( i == graph.nodes.length - 1){
+//			update_nodes(str);
 			console.log(str);
 		}
 	}
 
-
-	clean_up_d3 ();
-
-
+*/
 
 	var flower = svg.append("svg:image")
 		.attr('x',node[0][flower_id].__data__.x)
@@ -267,7 +324,6 @@ function nodelist() {
 	return bee;
 	}
 
-	console.log('nodelist');
 	$('#run').click(function(){
 	var points = []
 
@@ -565,8 +621,8 @@ function nodelist() {
 							   .attr("xlink:href","/assets/"+bee+".png");
 
 			}
-			var trap_x = node.x -cm_x
-			var trap_y = node.y -cm_y
+			var trap_x = parseInt(node.x) -cm_x
+			var trap_y = parseInt(node.y) -cm_y
 		    var angry = svg.append("svg:image")
 							.attr("id","trapped")
 							.attr('x',0)
@@ -575,8 +631,8 @@ function nodelist() {
 							.attr('width', 120)
 					        .attr('height',120)
 							.attr("xlink:href","/assets/comment.png");
-			var text_x = node.x +t_x
-			var text_y = node.y -t_y
+			var text_x = parseInt(node.px)+ t_x
+			var text_y = parseInt(node.py) - t_y
 				svg.append("text")
 				   .attr("id","trappedtext")
 				   .text(text)
@@ -674,13 +730,12 @@ function dragstart(d) {
 	d3.select(this).classed("fixed", d.fixed = true);
 }
 
-/*
 node.each(function(d) {
 	d.fixed = true;
 	d.px = d.lx
 	d.py = d.ly
 });
-*/
+
 
 function post_solution(sol, result) {
 	$.ajax({
@@ -697,5 +752,16 @@ function post_solution(sol, result) {
 	});
 }
 
+/*
+function update_nodes(str) {
+	$.ajax({
+	    url: "/levels/<%= @level.id%>",
+	    type: "PUT",
+	    data: {'level': {
+	             nodes_list: str,
+	}},
+	    success: function(resp){console.log('updated');}
+	});
+}*/
 
 	</script>
