@@ -345,15 +345,15 @@ margin-left:2px;
 
 #pagination {
     clear:both;
-    width:75px;
-    margin:25px auto 0;
+    margin:25px 15px 0;
     padding:0;
+    text-align: center;
 }
 
 #pagination li {
     list-style:none;
-    float:left;
     margin:0 2px;
+display: inline-block;
 }
 
 #pagination li a {

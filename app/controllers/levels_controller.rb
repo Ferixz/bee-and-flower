@@ -25,6 +25,9 @@ class LevelsController < ApplicationController
      @next = Level.find_by_level_index(@next_index)
      @prev = Level.find_by_level_index(@prev_index)
   end
+  def converter
+
+  end
 
   # GET /levels/new
   def new
